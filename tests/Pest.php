@@ -35,5 +35,6 @@ expect()->extend('toBeOne', function () {
 expect()->extend('toBeValidMcpToolResponse', function () {
     return $this->toHaveKey('content')
         ->and($this->value['content'])->toBeArray()
+        ->and($this->value['content'])->not->toBeEmpty()
         ->and($this->value['content'][0])->toHaveKeys(['type', 'text']);
 });
