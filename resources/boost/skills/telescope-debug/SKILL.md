@@ -11,7 +11,7 @@ metadata:
 
 ## What This Skill Provides
 
-Access to structured debugging data from Laravel Telescope, giving you deep visibility into your application's runtime behavior through 20 specialized tools.
+Access to structured debugging data from Laravel Telescope, giving you deep visibility into your application's runtime behavior through 19 specialized tools.
 
 ## When to Activate
 
@@ -49,7 +49,7 @@ Use this skill when:
 ### Core Debugging Tools
 
 #### `telescope_exceptions`
-Get recent exceptions with full stack traces and context.
+Get recent exceptions with full-stack traces and context.
 
 **Parameters:**
 - `id` (string, optional): Get details of a specific exception
