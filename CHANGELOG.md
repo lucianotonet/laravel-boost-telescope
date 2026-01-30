@@ -4,6 +4,12 @@ All notable changes to `laravel-telescope-mcp` will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- Updated PHP requirement to 8.2+
+- Updated Laravel requirement to ^11.0|^12.0
+- Updated Laravel Telescope requirement to ^5.0|^6.0
+- Updated Laravel Boost requirement to ^2.0
+
 ## [1.0.0-beta.1] - 2026-01-30
 
 ### Added
