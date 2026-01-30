@@ -29,7 +29,7 @@
         "php": "^8.2",
         "laravel/boost": "^2.0",
         "laravel/framework": "^11.0|^12.0",
-        "laravel/telescope": "^5.0|^6.0"
+        "laravel/telescope": "^5.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.0",
