@@ -20,9 +20,10 @@ While Laravel Boost reads log files, this plugin gives your AI assistant access 
 
 ## Requirements
 
-- PHP 8.1+
-- Laravel 10, 11, or 12
-- Laravel Telescope 4.0+
+- PHP 8.2+
+- Laravel 11 or 12
+- Laravel Telescope 5.0+ or 6.0+
+- Laravel Boost 2.0+
 
 ## Installation
 
