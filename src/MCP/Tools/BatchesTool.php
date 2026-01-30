@@ -3,13 +3,13 @@
 namespace LucianoTonet\TelescopeMcp\MCP\Tools;
 
 use Laravel\Telescope\Contracts\EntriesRepository;
-use LucianoTonet\TelescopeMcp\Support\Logger;
-use LucianoTonet\TelescopeMcp\Support\DateFormatter;
 use Laravel\Telescope\EntryType;
 use Laravel\Telescope\Storage\EntryQueryOptions;
+use LucianoTonet\TelescopeMcp\Support\DateFormatter;
+use LucianoTonet\TelescopeMcp\Support\Logger;
 
 /**
- * Tool for interacting with batch operations recorded by Telescope
+ * Tool for interacting with batch operations recorded by Telescope.
  */
 class BatchesTool extends AbstractTool
 {
@@ -19,8 +19,8 @@ class BatchesTool extends AbstractTool
     protected $entriesRepository;
 
     /**
-     * BatchesTool constructor
-     * 
+     * BatchesTool constructor.
+     *
      * @param EntriesRepository $entriesRepository The Telescope entries repository
      */
     public function __construct(EntriesRepository $entriesRepository)
@@ -29,9 +29,7 @@ class BatchesTool extends AbstractTool
     }
 
     /**
-     * Returns the tool's short name
-     * 
-     * @return string
+     * Returns the tool's short name.
      */
     public function getShortName(): string
     {
@@ -39,9 +37,7 @@ class BatchesTool extends AbstractTool
     }
 
     /**
-     * Returns the tool's schema
-     * 
-     * @return array
+     * Returns the tool's schema.
      */
     public function getSchema(): array
     {
@@ -53,24 +49,24 @@ class BatchesTool extends AbstractTool
                 'properties' => [
                     'id' => [
                         'type' => 'string',
-                        'description' => 'ID of the specific batch operation to view details'
+                        'description' => 'ID of the specific batch operation to view details',
                     ],
                     'limit' => [
                         'type' => 'integer',
                         'description' => 'Maximum number of batch operations to return',
-                        'default' => 50
+                        'default' => 50,
                     ],
                     'status' => [
                         'type' => 'string',
                         'description' => 'Filter by batch status (pending, processing, finished, failed)',
-                        'enum' => ['pending', 'processing', 'finished', 'failed']
+                        'enum' => ['pending', 'processing', 'finished', 'failed'],
                     ],
                     'name' => [
                         'type' => 'string',
-                        'description' => 'Filter by batch name'
-                    ]
+                        'description' => 'Filter by batch name',
+                    ],
                 ],
-                'required' => []
+                'required' => [],
             ],
             'outputSchema' => [
                 'type' => 'object',
@@ -81,40 +77,41 @@ class BatchesTool extends AbstractTool
                             'type' => 'object',
                             'properties' => [
                                 'type' => ['type' => 'string'],
-                                'text' => ['type' => 'string']
+                                'text' => ['type' => 'string'],
                             ],
-                            'required' => ['type', 'text']
-                        ]
-                    ]
+                            'required' => ['type', 'text'],
+                        ],
+                    ],
                 ],
-                'required' => ['content']
+                'required' => ['content'],
             ],
             'examples' => [
                 [
                     'description' => 'List last 10 batch operations',
-                    'params' => ['limit' => 10]
+                    'params' => ['limit' => 10],
                 ],
                 [
                     'description' => 'Get details of a specific batch operation',
-                    'params' => ['id' => '12345']
+                    'params' => ['id' => '12345'],
                 ],
                 [
                     'description' => 'List failed batch operations',
-                    'params' => ['status' => 'failed']
-                ]
-            ]
+                    'params' => ['status' => 'failed'],
+                ],
+            ],
         ];
     }
 
     /**
-     * Executes the tool with the given parameters
-     * 
+     * Executes the tool with the given parameters.
+     *
      * @param array $params Tool parameters
+     *
      * @return array Response in MCP format
      */
     public function execute(array $params): array
     {
-        Logger::info($this->getName() . ' execute method called', ['params' => $params]);
+        Logger::info($this->getName().' execute method called', ['params' => $params]);
 
         try {
             // Check if details of a specific batch operation were requested
@@ -124,25 +121,26 @@ class BatchesTool extends AbstractTool
 
             return $this->listBatches($params);
         } catch (\Exception $e) {
-            Logger::error($this->getName() . ' execution error', [
+            Logger::error($this->getName().' execution error', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
-            return $this->formatError('Error: ' . $e->getMessage());
+            return $this->formatError('Error: '.$e->getMessage());
         }
     }
 
     /**
-     * Lists batch operations recorded by Telescope
-     * 
+     * Lists batch operations recorded by Telescope.
+     *
      * @param array $params Query parameters
+     *
      * @return array Response in MCP format
      */
     protected function listBatches(array $params): array
     {
         // Set query limit
-        $limit = isset($params['limit']) ? min((int)$params['limit'], 100) : 50;
+        $limit = isset($params['limit']) ? min((int) $params['limit'], 100) : 50;
 
         // Configure options
         $options = new EntryQueryOptions();
@@ -150,17 +148,17 @@ class BatchesTool extends AbstractTool
 
         // Add filters if specified
         if (!empty($params['status'])) {
-            $options->tag('status:' . $params['status']);
+            $options->tag('status:'.$params['status']);
         }
         if (!empty($params['name'])) {
-            $options->tag('name:' . $params['name']);
+            $options->tag('name:'.$params['name']);
         }
 
         // Fetch entries using the repository
         $entries = $this->entriesRepository->get(EntryType::BATCH, $options);
 
         if (empty($entries)) {
-            return $this->formatResponse("No batch operations found.");
+            return $this->formatResponse('No batch operations found.');
         }
 
         $batches = [];
@@ -185,28 +183,43 @@ class BatchesTool extends AbstractTool
                 'finished' => $finishedJobs,
                 'pending' => $pendingJobs,
                 'failed' => $failedJobs,
-                'created_at' => $createdAt
+                'created_at' => $createdAt,
             ];
         }
 
         // Tabular formatting for better readability
         $table = "Batch Operations:\n\n";
-        $table .= sprintf("%-5s %-30s %-10s %-8s %-8s %-8s %-8s %-20s\n", 
-            "ID", "Name", "Status", "Total", "Done", "Pending", "Failed", "Created At");
-        $table .= str_repeat("-", 105) . "\n";
+        $table .= sprintf(
+            "%-5s %-30s %-10s %-8s %-8s %-8s %-8s %-20s\n",
+            'ID',
+            'Name',
+            'Status',
+            'Total',
+            'Done',
+            'Pending',
+            'Failed',
+            'Created At'
+        );
+        $table .= str_repeat('-', 105)."\n";
 
         foreach ($batches as $batch) {
             // Format status with indicator
             $statusStr = strtoupper($batch['status']);
+
             switch (strtolower($batch['status'])) {
                 case 'failed':
                     $statusStr .= ' [!]';
+
                     break;
+
                 case 'finished':
                     $statusStr .= ' [✓]';
+
                     break;
+
                 case 'processing':
                     $statusStr .= ' [→]';
+
                     break;
             }
 
@@ -214,7 +227,7 @@ class BatchesTool extends AbstractTool
             $name = $batch['name'];
             $name = $this->safeString($name);
             if (strlen($name) > 30) {
-                $name = substr($name, 0, 27) . "...";
+                $name = substr($name, 0, 27).'...';
             }
 
             $table .= sprintf(
@@ -234,14 +247,15 @@ class BatchesTool extends AbstractTool
     }
 
     /**
-     * Gets details of a specific batch operation
-     * 
+     * Gets details of a specific batch operation.
+     *
      * @param string $id The batch operation ID
+     *
      * @return array Response in MCP format
      */
     protected function getBatchDetails(string $id): array
     {
-        Logger::info($this->getName() . ' getting details', ['id' => $id]);
+        Logger::info($this->getName().' getting details', ['id' => $id]);
 
         // Fetch the specific entry
         $entry = $this->getEntryDetails(EntryType::BATCH, $id);
@@ -255,8 +269,8 @@ class BatchesTool extends AbstractTool
         // Detailed formatting of the batch operation
         $output = "Batch Operation Details:\n\n";
         $output .= "ID: {$entry->id}\n";
-        $output .= "Name: " . ($content['name'] ?? 'Unknown') . "\n";
-        $output .= "Status: " . strtoupper($content['status'] ?? 'Unknown') . "\n";
+        $output .= 'Name: '.($content['name'] ?? 'Unknown')."\n";
+        $output .= 'Status: '.strtoupper($content['status'] ?? 'Unknown')."\n";
 
         // Progress information
         $totalJobs = $content['totalJobs'] ?? 0;
@@ -272,7 +286,7 @@ class BatchesTool extends AbstractTool
 
         if ($totalJobs > 0) {
             $progress = ($finishedJobs / $totalJobs) * 100;
-            $output .= "Completion: " . number_format($progress, 1) . "%\n";
+            $output .= 'Completion: '.number_format($progress, 1)."%\n";
         }
 
         $createdAt = DateFormatter::format($entry->createdAt);
@@ -280,17 +294,17 @@ class BatchesTool extends AbstractTool
 
         // Options and configuration
         if (!empty($content['options'])) {
-            $output .= "\nOptions:\n" . json_encode($content['options'], JSON_PRETTY_PRINT) . "\n";
+            $output .= "\nOptions:\n".json_encode($content['options'], JSON_PRETTY_PRINT)."\n";
         }
 
         // Failed jobs details
         if ($failedJobs > 0 && !empty($content['failedJobs'])) {
             $output .= "\nFailed Jobs:\n";
             foreach ($content['failedJobs'] as $job) {
-                $output .= "- Job: " . ($job['name'] ?? 'Unknown') . "\n";
-                $output .= "  Error: " . ($job['error'] ?? 'Unknown error') . "\n";
+                $output .= '- Job: '.($job['name'] ?? 'Unknown')."\n";
+                $output .= '  Error: '.($job['error'] ?? 'Unknown error')."\n";
                 if (!empty($job['stack'])) {
-                    $output .= "  Stack Trace:\n    " . implode("\n    ", array_slice($job['stack'], 0, 5)) . "\n";
+                    $output .= "  Stack Trace:\n    ".implode("\n    ", array_slice($job['stack'], 0, 5))."\n";
                     if (count($job['stack']) > 5) {
                         $output .= "    ... (truncated)\n";
                     }
@@ -301,4 +315,4 @@ class BatchesTool extends AbstractTool
 
         return $this->formatResponse($output);
     }
-} 
+}

@@ -3,13 +3,13 @@
 namespace LucianoTonet\TelescopeMcp\MCP\Tools;
 
 use Laravel\Telescope\Contracts\EntriesRepository;
-use LucianoTonet\TelescopeMcp\Support\Logger;
-use LucianoTonet\TelescopeMcp\Support\DateFormatter;
 use Laravel\Telescope\EntryType;
 use Laravel\Telescope\Storage\EntryQueryOptions;
+use LucianoTonet\TelescopeMcp\Support\DateFormatter;
+use LucianoTonet\TelescopeMcp\Support\Logger;
 
 /**
- * Tool for interacting with gate checks recorded by Telescope
+ * Tool for interacting with gate checks recorded by Telescope.
  */
 class GatesTool extends AbstractTool
 {
@@ -19,8 +19,8 @@ class GatesTool extends AbstractTool
     protected $entriesRepository;
 
     /**
-     * GatesTool constructor
-     * 
+     * GatesTool constructor.
+     *
      * @param EntriesRepository $entriesRepository The Telescope entries repository
      */
     public function __construct(EntriesRepository $entriesRepository)
@@ -29,9 +29,7 @@ class GatesTool extends AbstractTool
     }
 
     /**
-     * Returns the tool's short name
-     * 
-     * @return string
+     * Returns the tool's short name.
      */
     public function getShortName(): string
     {
@@ -39,9 +37,7 @@ class GatesTool extends AbstractTool
     }
 
     /**
-     * Returns the tool's schema
-     * 
-     * @return array
+     * Returns the tool's schema.
      */
     public function getSchema(): array
     {
@@ -53,24 +49,24 @@ class GatesTool extends AbstractTool
                 'properties' => [
                     'id' => [
                         'type' => 'string',
-                        'description' => 'ID of the specific gate check to view details'
+                        'description' => 'ID of the specific gate check to view details',
                     ],
                     'limit' => [
                         'type' => 'integer',
                         'description' => 'Maximum number of gate checks to return',
-                        'default' => 50
+                        'default' => 50,
                     ],
                     'ability' => [
                         'type' => 'string',
-                        'description' => 'Filter by gate ability name'
+                        'description' => 'Filter by gate ability name',
                     ],
                     'result' => [
                         'type' => 'string',
                         'description' => 'Filter by check result (allowed, denied)',
-                        'enum' => ['allowed', 'denied']
-                    ]
+                        'enum' => ['allowed', 'denied'],
+                    ],
                 ],
-                'required' => []
+                'required' => [],
             ],
             'outputSchema' => [
                 'type' => 'object',
@@ -81,40 +77,41 @@ class GatesTool extends AbstractTool
                             'type' => 'object',
                             'properties' => [
                                 'type' => ['type' => 'string'],
-                                'text' => ['type' => 'string']
+                                'text' => ['type' => 'string'],
                             ],
-                            'required' => ['type', 'text']
-                        ]
-                    ]
+                            'required' => ['type', 'text'],
+                        ],
+                    ],
                 ],
-                'required' => ['content']
+                'required' => ['content'],
             ],
             'examples' => [
                 [
                     'description' => 'List last 10 gate checks',
-                    'params' => ['limit' => 10]
+                    'params' => ['limit' => 10],
                 ],
                 [
                     'description' => 'Get details of a specific gate check',
-                    'params' => ['id' => '12345']
+                    'params' => ['id' => '12345'],
                 ],
                 [
                     'description' => 'List denied gate checks',
-                    'params' => ['result' => 'denied']
-                ]
-            ]
+                    'params' => ['result' => 'denied'],
+                ],
+            ],
         ];
     }
 
     /**
-     * Executes the tool with the given parameters
-     * 
+     * Executes the tool with the given parameters.
+     *
      * @param array $params Tool parameters
+     *
      * @return array Response in MCP format
      */
     public function execute(array $params): array
     {
-        Logger::info($this->getName() . ' execute method called', ['params' => $params]);
+        Logger::info($this->getName().' execute method called', ['params' => $params]);
 
         try {
             // Check if details of a specific gate check were requested
@@ -124,25 +121,26 @@ class GatesTool extends AbstractTool
 
             return $this->listGateChecks($params);
         } catch (\Exception $e) {
-            Logger::error($this->getName() . ' execution error', [
+            Logger::error($this->getName().' execution error', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
-            return $this->formatError('Error: ' . $e->getMessage());
+            return $this->formatError('Error: '.$e->getMessage());
         }
     }
 
     /**
-     * Lists gate checks recorded by Telescope
-     * 
+     * Lists gate checks recorded by Telescope.
+     *
      * @param array $params Query parameters
+     *
      * @return array Response in MCP format
      */
     protected function listGateChecks(array $params): array
     {
         // Set query limit
-        $limit = isset($params['limit']) ? min((int)$params['limit'], 100) : 50;
+        $limit = isset($params['limit']) ? min((int) $params['limit'], 100) : 50;
 
         // Configure options
         $options = new EntryQueryOptions();
@@ -150,17 +148,17 @@ class GatesTool extends AbstractTool
 
         // Add filters if specified
         if (!empty($params['ability'])) {
-            $options->tag('ability:' . $params['ability']);
+            $options->tag('ability:'.$params['ability']);
         }
         if (!empty($params['result'])) {
-            $options->tag('result:' . $params['result']);
+            $options->tag('result:'.$params['result']);
         }
 
         // Fetch entries using the repository
         $entries = $this->entriesRepository->get(EntryType::GATE, $options);
 
         if (empty($entries)) {
-            return $this->formatResponse("No gate checks found.");
+            return $this->formatResponse('No gate checks found.');
         }
 
         $checks = [];
@@ -179,33 +177,39 @@ class GatesTool extends AbstractTool
                 'ability' => $ability,
                 'result' => $result,
                 'user' => $user,
-                'created_at' => $createdAt
+                'created_at' => $createdAt,
             ];
         }
 
         // Tabular formatting for better readability
         $table = "Gate Checks:\n\n";
-        $table .= sprintf("%-5s %-30s %-10s %-30s %-20s\n", 
-            "ID", "Ability", "Result", "User", "Created At");
-        $table .= str_repeat("-", 100) . "\n";
+        $table .= sprintf(
+            "%-5s %-30s %-10s %-30s %-20s\n",
+            'ID',
+            'Ability',
+            'Result',
+            'User',
+            'Created At'
+        );
+        $table .= str_repeat('-', 100)."\n";
 
         foreach ($checks as $check) {
             // Truncate fields if too long
             $ability = $check['ability'];
             $ability = $this->safeString($ability);
             if (strlen($ability) > 30) {
-                $ability = substr($ability, 0, 27) . "...";
+                $ability = substr($ability, 0, 27).'...';
             }
 
             $user = $check['user'];
             $user = $this->safeString($user);
             if (strlen($user) > 30) {
-                $user = substr($user, 0, 27) . "...";
+                $user = substr($user, 0, 27).'...';
             }
 
             // Format result with color indicator
             $resultStr = $check['result'];
-            if ($resultStr === 'Denied') {
+            if ('Denied' === $resultStr) {
                 $resultStr .= ' [!]';
             }
 
@@ -223,14 +227,15 @@ class GatesTool extends AbstractTool
     }
 
     /**
-     * Gets details of a specific gate check
-     * 
+     * Gets details of a specific gate check.
+     *
      * @param string $id The gate check ID
+     *
      * @return array Response in MCP format
      */
     protected function getGateDetails(string $id): array
     {
-        Logger::info($this->getName() . ' getting details', ['id' => $id]);
+        Logger::info($this->getName().' getting details', ['id' => $id]);
 
         // Fetch the specific entry
         $entry = $this->getEntryDetails(EntryType::GATE, $id);
@@ -244,23 +249,23 @@ class GatesTool extends AbstractTool
         // Detailed formatting of the gate check
         $output = "Gate Check Details:\n\n";
         $output .= "ID: {$entry->id}\n";
-        $output .= "Ability: " . ($content['ability'] ?? 'Unknown') . "\n";
-        $output .= "Result: " . (isset($content['result']) && $content['result'] ? 'Allowed' : 'Denied') . "\n";
-        $output .= "User: " . ($content['user'] ?? 'Unknown') . "\n";
+        $output .= 'Ability: '.($content['ability'] ?? 'Unknown')."\n";
+        $output .= 'Result: '.(isset($content['result']) && $content['result'] ? 'Allowed' : 'Denied')."\n";
+        $output .= 'User: '.($content['user'] ?? 'Unknown')."\n";
 
         $createdAt = DateFormatter::format($entry->createdAt);
         $output .= "Created At: {$createdAt}\n\n";
 
         // Arguments
         if (!empty($content['arguments'])) {
-            $output .= "Arguments:\n" . json_encode($content['arguments'], JSON_PRETTY_PRINT) . "\n\n";
+            $output .= "Arguments:\n".json_encode($content['arguments'], JSON_PRETTY_PRINT)."\n\n";
         }
 
         // Additional context
         if (!empty($content['context'])) {
-            $output .= "Context:\n" . json_encode($content['context'], JSON_PRETTY_PRINT) . "\n";
+            $output .= "Context:\n".json_encode($content['context'], JSON_PRETTY_PRINT)."\n";
         }
 
         return $this->formatResponse($output);
     }
-} 
+}

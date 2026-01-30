@@ -3,8 +3,8 @@
 namespace LucianoTonet\TelescopeMcp;
 
 use Illuminate\Support\ServiceProvider;
+use Laravel\Telescope\Telescope;
 use LucianoTonet\TelescopeMcp\Support\Logger;
-use RuntimeException;
 
 /**
  * Main Service Provider for Laravel Telescope MCP.
@@ -30,21 +30,6 @@ class TelescopeMcpServiceProvider extends ServiceProvider
     }
 
     /**
-     * Ensure Laravel Telescope is installed.
-     *
-     * @throws RuntimeException
-     */
-    protected function ensureTelescopeIsInstalled(): void
-    {
-        if (! class_exists(\Laravel\Telescope\Telescope::class)) {
-            throw new RuntimeException(
-                'Laravel Telescope is required for Telescope MCP to work. '.
-                'Please install it with: composer require laravel/telescope --dev'
-            );
-        }
-    }
-
-    /**
      * Register any application services.
      */
     public function register(): void
@@ -56,6 +41,21 @@ class TelescopeMcpServiceProvider extends ServiceProvider
 
         // Register the Boost provider for skill discovery
         $this->app->register(TelescopeBoostServiceProvider::class);
+    }
+
+    /**
+     * Ensure Laravel Telescope is installed.
+     *
+     * @throws \RuntimeException
+     */
+    protected function ensureTelescopeIsInstalled(): void
+    {
+        if (!class_exists(Telescope::class)) {
+            throw new \RuntimeException(
+                'Laravel Telescope is required for Telescope MCP to work. '
+                .'Please install it with: composer require laravel/telescope --dev'
+            );
+        }
     }
 
     /**

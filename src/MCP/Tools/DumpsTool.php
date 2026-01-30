@@ -3,13 +3,13 @@
 namespace LucianoTonet\TelescopeMcp\MCP\Tools;
 
 use Laravel\Telescope\Contracts\EntriesRepository;
-use LucianoTonet\TelescopeMcp\Support\Logger;
-use LucianoTonet\TelescopeMcp\Support\DateFormatter;
 use Laravel\Telescope\EntryType;
 use Laravel\Telescope\Storage\EntryQueryOptions;
+use LucianoTonet\TelescopeMcp\Support\DateFormatter;
+use LucianoTonet\TelescopeMcp\Support\Logger;
 
 /**
- * Tool for interacting with dump entries recorded by Telescope
+ * Tool for interacting with dump entries recorded by Telescope.
  */
 class DumpsTool extends AbstractTool
 {
@@ -19,8 +19,8 @@ class DumpsTool extends AbstractTool
     protected $entriesRepository;
 
     /**
-     * DumpsTool constructor
-     * 
+     * DumpsTool constructor.
+     *
      * @param EntriesRepository $entriesRepository The Telescope entries repository
      */
     public function __construct(EntriesRepository $entriesRepository)
@@ -29,9 +29,7 @@ class DumpsTool extends AbstractTool
     }
 
     /**
-     * Returns the tool's short name
-     * 
-     * @return string
+     * Returns the tool's short name.
      */
     public function getShortName(): string
     {
@@ -39,9 +37,7 @@ class DumpsTool extends AbstractTool
     }
 
     /**
-     * Returns the tool's schema
-     * 
-     * @return array
+     * Returns the tool's schema.
      */
     public function getSchema(): array
     {
@@ -53,23 +49,23 @@ class DumpsTool extends AbstractTool
                 'properties' => [
                     'id' => [
                         'type' => 'string',
-                        'description' => 'ID of the specific dump entry to view details'
+                        'description' => 'ID of the specific dump entry to view details',
                     ],
                     'limit' => [
                         'type' => 'integer',
                         'description' => 'Maximum number of dump entries to return',
-                        'default' => 50
+                        'default' => 50,
                     ],
                     'file' => [
                         'type' => 'string',
-                        'description' => 'Filter by file path'
+                        'description' => 'Filter by file path',
                     ],
                     'line' => [
                         'type' => 'integer',
-                        'description' => 'Filter by line number'
-                    ]
+                        'description' => 'Filter by line number',
+                    ],
                 ],
-                'required' => []
+                'required' => [],
             ],
             'outputSchema' => [
                 'type' => 'object',
@@ -80,40 +76,41 @@ class DumpsTool extends AbstractTool
                             'type' => 'object',
                             'properties' => [
                                 'type' => ['type' => 'string'],
-                                'text' => ['type' => 'string']
+                                'text' => ['type' => 'string'],
                             ],
-                            'required' => ['type', 'text']
-                        ]
-                    ]
+                            'required' => ['type', 'text'],
+                        ],
+                    ],
                 ],
-                'required' => ['content']
+                'required' => ['content'],
             ],
             'examples' => [
                 [
                     'description' => 'List last 10 dump entries',
-                    'params' => ['limit' => 10]
+                    'params' => ['limit' => 10],
                 ],
                 [
                     'description' => 'Get details of a specific dump entry',
-                    'params' => ['id' => '12345']
+                    'params' => ['id' => '12345'],
                 ],
                 [
                     'description' => 'List dumps from a specific file',
-                    'params' => ['file' => 'app/Http/Controllers/HomeController.php']
-                ]
-            ]
+                    'params' => ['file' => 'app/Http/Controllers/HomeController.php'],
+                ],
+            ],
         ];
     }
 
     /**
-     * Executes the tool with the given parameters
-     * 
+     * Executes the tool with the given parameters.
+     *
      * @param array $params Tool parameters
+     *
      * @return array Response in MCP format
      */
     public function execute(array $params): array
     {
-        Logger::info($this->getName() . ' execute method called', ['params' => $params]);
+        Logger::info($this->getName().' execute method called', ['params' => $params]);
 
         try {
             // Check if details of a specific dump entry were requested
@@ -123,25 +120,26 @@ class DumpsTool extends AbstractTool
 
             return $this->listDumps($params);
         } catch (\Exception $e) {
-            Logger::error($this->getName() . ' execution error', [
+            Logger::error($this->getName().' execution error', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
-            return $this->formatError('Error: ' . $e->getMessage());
+            return $this->formatError('Error: '.$e->getMessage());
         }
     }
 
     /**
-     * Lists dump entries recorded by Telescope
-     * 
+     * Lists dump entries recorded by Telescope.
+     *
      * @param array $params Query parameters
+     *
      * @return array Response in MCP format
      */
     protected function listDumps(array $params): array
     {
         // Set query limit
-        $limit = isset($params['limit']) ? min((int)$params['limit'], 100) : 50;
+        $limit = isset($params['limit']) ? min((int) $params['limit'], 100) : 50;
 
         // Configure options
         $options = new EntryQueryOptions();
@@ -149,17 +147,17 @@ class DumpsTool extends AbstractTool
 
         // Add filters if specified
         if (!empty($params['file'])) {
-            $options->tag('file:' . $params['file']);
+            $options->tag('file:'.$params['file']);
         }
         if (!empty($params['line'])) {
-            $options->tag('line:' . $params['line']);
+            $options->tag('line:'.$params['line']);
         }
 
         // Fetch entries using the repository
         $entries = $this->entriesRepository->get(EntryType::DUMP, $options);
 
         if (empty($entries)) {
-            return $this->formatResponse("No dump entries found.");
+            return $this->formatResponse('No dump entries found.');
         }
 
         $dumps = [];
@@ -179,7 +177,7 @@ class DumpsTool extends AbstractTool
             }
             $dump = $this->safeString($dump);
             if (strlen($dump) > 50) {
-                $dump = substr($dump, 0, 47) . "...";
+                $dump = substr($dump, 0, 47).'...';
             }
 
             $dumps[] = [
@@ -187,22 +185,28 @@ class DumpsTool extends AbstractTool
                 'file' => $file,
                 'line' => $line,
                 'dump' => $dump,
-                'created_at' => $createdAt
+                'created_at' => $createdAt,
             ];
         }
 
         // Tabular formatting for better readability
         $table = "Dump Entries:\n\n";
-        $table .= sprintf("%-5s %-40s %-6s %-50s %-20s\n", 
-            "ID", "File", "Line", "Content", "Created At");
-        $table .= str_repeat("-", 125) . "\n";
+        $table .= sprintf(
+            "%-5s %-40s %-6s %-50s %-20s\n",
+            'ID',
+            'File',
+            'Line',
+            'Content',
+            'Created At'
+        );
+        $table .= str_repeat('-', 125)."\n";
 
         foreach ($dumps as $dump) {
             // Truncate file path if too long
             $file = $dump['file'];
             $file = $this->safeString($file);
             if (strlen($file) > 40) {
-                $file = "..." . substr($file, -37);
+                $file = '...'.substr($file, -37);
             }
 
             $table .= sprintf(
@@ -219,14 +223,15 @@ class DumpsTool extends AbstractTool
     }
 
     /**
-     * Gets details of a specific dump entry
-     * 
+     * Gets details of a specific dump entry.
+     *
      * @param string $id The dump entry ID
+     *
      * @return array Response in MCP format
      */
     protected function getDumpDetails(string $id): array
     {
-        Logger::info($this->getName() . ' getting details', ['id' => $id]);
+        Logger::info($this->getName().' getting details', ['id' => $id]);
 
         // Fetch the specific entry
         $entry = $this->getEntryDetails(EntryType::DUMP, $id);
@@ -240,23 +245,23 @@ class DumpsTool extends AbstractTool
         // Detailed formatting of the dump entry
         $output = "Dump Entry Details:\n\n";
         $output .= "ID: {$entry->id}\n";
-        $output .= "File: " . ($content['file'] ?? 'Unknown') . "\n";
-        $output .= "Line: " . ($content['line'] ?? 'Unknown') . "\n";
+        $output .= 'File: '.($content['file'] ?? 'Unknown')."\n";
+        $output .= 'Line: '.($content['line'] ?? 'Unknown')."\n";
 
         $createdAt = DateFormatter::format($entry->createdAt);
         $output .= "Created At: {$createdAt}\n\n";
 
         // Dump content
         $dump = $content['dump'] ?? null;
-        if ($dump !== null) {
+        if (null !== $dump) {
             $output .= "Content:\n";
             if (is_array($dump) || is_object($dump)) {
-                $output .= json_encode($dump, JSON_PRETTY_PRINT) . "\n";
+                $output .= json_encode($dump, JSON_PRETTY_PRINT)."\n";
             } else {
-                $output .= $dump . "\n";
+                $output .= $dump."\n";
             }
         }
 
         return $this->formatResponse($output);
     }
-} 
+}

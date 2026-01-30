@@ -1,17 +1,22 @@
 <?php
 
-use LucianoTonet\TelescopeMcp\TelescopeMcpServiceProvider;
-use LucianoTonet\TelescopeMcp\TelescopeBoostServiceProvider;
+use LucianoTonet\TelescopeMcp\BoostExtension\Tools\TelescopeExceptionsTool;
+use LucianoTonet\TelescopeMcp\BoostExtension\Tools\TelescopeHttpClientTool;
+use LucianoTonet\TelescopeMcp\BoostExtension\Tools\TelescopeRequestsTool;
 use LucianoTonet\TelescopeMcp\MCP\TelescopeMcpServer;
+use LucianoTonet\TelescopeMcp\TelescopeBoostServiceProvider;
+use LucianoTonet\TelescopeMcp\TelescopeMcpServiceProvider;
 
 test('telescope mcp service provider is registered', function () {
     expect(app()->getProvider(TelescopeMcpServiceProvider::class))
-        ->toBeInstanceOf(TelescopeMcpServiceProvider::class);
+        ->toBeInstanceOf(TelescopeMcpServiceProvider::class)
+    ;
 });
 
 test('telescope boost service provider is registered', function () {
     expect(app()->getProvider(TelescopeBoostServiceProvider::class))
-        ->toBeInstanceOf(TelescopeBoostServiceProvider::class);
+        ->toBeInstanceOf(TelescopeBoostServiceProvider::class)
+    ;
 });
 
 test('telescope mcp server can be resolved from container', function () {
@@ -23,7 +28,8 @@ test('telescope mcp server can be resolved from container', function () {
 test('config is loaded correctly', function () {
     expect(config('telescope-mcp.enabled'))->toBeTrue()
         ->and(config('telescope-mcp.logging.enabled'))->toBeTrue()
-        ->and(config('telescope-mcp.logging.channel'))->toBe('stack');
+        ->and(config('telescope-mcp.logging.channel'))->toBe('stack')
+    ;
 });
 
 test('boost resources directory exists', function () {
@@ -31,7 +37,8 @@ test('boost resources directory exists', function () {
 
     expect(is_dir($boostPath))->toBeTrue()
         ->and(is_dir($boostPath.'/guidelines'))->toBeTrue()
-        ->and(is_dir($boostPath.'/skills'))->toBeTrue();
+        ->and(is_dir($boostPath.'/skills'))->toBeTrue()
+    ;
 });
 
 test('boost guidelines file exists', function () {
@@ -53,16 +60,17 @@ test('boost skill has valid frontmatter', function () {
     expect($content)
         ->toContain('---')
         ->toContain('name: telescope-debug')
-        ->toContain('description:');
+        ->toContain('description:')
+    ;
 });
 
 test('telescope tools are registered in boost config', function () {
     $tools = config('boost.mcp.tools.include');
 
     expect($tools)->toBeArray();
-    
+
     // Check for some key tools
-    expect($tools)->toContain(LucianoTonet\TelescopeMcp\BoostExtension\Tools\TelescopeRequestsTool::class);
-    expect($tools)->toContain(LucianoTonet\TelescopeMcp\BoostExtension\Tools\TelescopeExceptionsTool::class);
-    expect($tools)->toContain(LucianoTonet\TelescopeMcp\BoostExtension\Tools\TelescopeHttpClientTool::class);
+    expect($tools)->toContain(TelescopeRequestsTool::class);
+    expect($tools)->toContain(TelescopeExceptionsTool::class);
+    expect($tools)->toContain(TelescopeHttpClientTool::class);
 });

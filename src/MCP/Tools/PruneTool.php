@@ -2,19 +2,16 @@
 
 namespace LucianoTonet\TelescopeMcp\MCP\Tools;
 
-use LucianoTonet\TelescopeMcp\Support\Logger;
 use Illuminate\Support\Facades\Artisan;
-use Laravel\Telescope\Contracts\EntriesRepository;
+use LucianoTonet\TelescopeMcp\Support\Logger;
 
 /**
- * Tool for pruning old Telescope entries
+ * Tool for pruning old Telescope entries.
  */
 class PruneTool extends AbstractTool
 {
     /**
-     * Returns the tool's short name
-     * 
-     * @return string
+     * Returns the tool's short name.
      */
     public function getShortName(): string
     {
@@ -22,9 +19,7 @@ class PruneTool extends AbstractTool
     }
 
     /**
-     * Returns the tool's schema
-     * 
-     * @return array
+     * Returns the tool's schema.
      */
     public function getSchema(): array
     {
@@ -37,10 +32,10 @@ class PruneTool extends AbstractTool
                     'hours' => [
                         'type' => 'integer',
                         'description' => 'Number of hours to keep (entries older than this will be deleted)',
-                        'default' => 24
-                    ]
+                        'default' => 24,
+                    ],
                 ],
-                'required' => []
+                'required' => [],
             ],
             'outputSchema' => [
                 'type' => 'object',
@@ -51,57 +46,58 @@ class PruneTool extends AbstractTool
                             'type' => 'object',
                             'properties' => [
                                 'type' => ['type' => 'string'],
-                                'text' => ['type' => 'string']
+                                'text' => ['type' => 'string'],
                             ],
-                            'required' => ['type', 'text']
-                        ]
-                    ]
+                            'required' => ['type', 'text'],
+                        ],
+                    ],
                 ],
-                'required' => ['content']
+                'required' => ['content'],
             ],
             'examples' => [
                 [
                     'description' => 'Prune entries older than 24 hours',
-                    'params' => ['hours' => 24]
+                    'params' => ['hours' => 24],
                 ],
                 [
                     'description' => 'Prune entries older than 1 week',
-                    'params' => ['hours' => 168]
-                ]
-            ]
+                    'params' => ['hours' => 168],
+                ],
+            ],
         ];
     }
 
     /**
-     * Executes the tool with the given parameters
-     * 
+     * Executes the tool with the given parameters.
+     *
      * @param array $params Tool parameters
+     *
      * @return array Response in MCP format
      */
     public function execute(array $params): array
     {
-        Logger::info($this->getName() . ' execute method called', ['params' => $params]);
+        Logger::info($this->getName().' execute method called', ['params' => $params]);
 
         try {
             // Get hours parameter with default value
-            $hours = isset($params['hours']) ? (int)$params['hours'] : 24;
+            $hours = isset($params['hours']) ? (int) $params['hours'] : 24;
 
             // Execute the prune command
             $exitCode = Artisan::call('telescope:prune', ['--hours' => $hours]);
             $output = Artisan::output();
 
-            if ($exitCode !== 0) {
-                throw new \Exception('Failed to execute prune command. Exit code: ' . $exitCode);
+            if (0 !== $exitCode) {
+                throw new \Exception('Failed to execute prune command. Exit code: '.$exitCode);
             }
 
             return $this->formatResponse($output ?: 'Pruned entries successfully.');
         } catch (\Exception $e) {
-            Logger::error($this->getName() . ' execution error', [
+            Logger::error($this->getName().' execution error', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
-            return $this->formatError('Error: ' . $e->getMessage());
+            return $this->formatError('Error: '.$e->getMessage());
         }
     }
-} 
+}

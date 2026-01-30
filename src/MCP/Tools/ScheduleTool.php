@@ -3,13 +3,13 @@
 namespace LucianoTonet\TelescopeMcp\MCP\Tools;
 
 use Laravel\Telescope\Contracts\EntriesRepository;
-use LucianoTonet\TelescopeMcp\Support\Logger;
-use LucianoTonet\TelescopeMcp\Support\DateFormatter;
 use Laravel\Telescope\EntryType;
 use Laravel\Telescope\Storage\EntryQueryOptions;
+use LucianoTonet\TelescopeMcp\Support\DateFormatter;
+use LucianoTonet\TelescopeMcp\Support\Logger;
 
 /**
- * Tool for interacting with scheduled tasks recorded by Telescope
+ * Tool for interacting with scheduled tasks recorded by Telescope.
  */
 class ScheduleTool extends AbstractTool
 {
@@ -19,8 +19,8 @@ class ScheduleTool extends AbstractTool
     protected $entriesRepository;
 
     /**
-     * ScheduleTool constructor
-     * 
+     * ScheduleTool constructor.
+     *
      * @param EntriesRepository $entriesRepository The Telescope entries repository
      */
     public function __construct(EntriesRepository $entriesRepository)
@@ -29,9 +29,7 @@ class ScheduleTool extends AbstractTool
     }
 
     /**
-     * Returns the tool's short name
-     * 
-     * @return string
+     * Returns the tool's short name.
      */
     public function getShortName(): string
     {
@@ -39,9 +37,7 @@ class ScheduleTool extends AbstractTool
     }
 
     /**
-     * Returns the tool's schema
-     * 
-     * @return array
+     * Returns the tool's schema.
      */
     public function getSchema(): array
     {
@@ -53,15 +49,15 @@ class ScheduleTool extends AbstractTool
                 'properties' => [
                     'id' => [
                         'type' => 'string',
-                        'description' => 'ID of the specific scheduled task to view details'
+                        'description' => 'ID of the specific scheduled task to view details',
                     ],
                     'limit' => [
                         'type' => 'integer',
                         'description' => 'Maximum number of scheduled tasks to return',
-                        'default' => 50
-                    ]
+                        'default' => 50,
+                    ],
                 ],
-                'required' => []
+                'required' => [],
             ],
             'outputSchema' => [
                 'type' => 'object',
@@ -72,36 +68,37 @@ class ScheduleTool extends AbstractTool
                             'type' => 'object',
                             'properties' => [
                                 'type' => ['type' => 'string'],
-                                'text' => ['type' => 'string']
+                                'text' => ['type' => 'string'],
                             ],
-                            'required' => ['type', 'text']
-                        ]
-                    ]
+                            'required' => ['type', 'text'],
+                        ],
+                    ],
                 ],
-                'required' => ['content']
+                'required' => ['content'],
             ],
             'examples' => [
                 [
                     'description' => 'List last 10 scheduled tasks',
-                    'params' => ['limit' => 10]
+                    'params' => ['limit' => 10],
                 ],
                 [
                     'description' => 'Get details of a specific scheduled task',
-                    'params' => ['id' => '12345']
-                ]
-            ]
+                    'params' => ['id' => '12345'],
+                ],
+            ],
         ];
     }
 
     /**
-     * Executes the tool with the given parameters
-     * 
+     * Executes the tool with the given parameters.
+     *
      * @param array $params Tool parameters
+     *
      * @return array Response in MCP format
      */
     public function execute(array $params): array
     {
-        Logger::info($this->getName() . ' execute method called', ['params' => $params]);
+        Logger::info($this->getName().' execute method called', ['params' => $params]);
 
         try {
             // Check if details of a specific scheduled task were requested
@@ -111,25 +108,26 @@ class ScheduleTool extends AbstractTool
 
             return $this->listScheduledTasks($params);
         } catch (\Exception $e) {
-            Logger::error($this->getName() . ' execution error', [
+            Logger::error($this->getName().' execution error', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
-            return $this->formatError('Error: ' . $e->getMessage());
+            return $this->formatError('Error: '.$e->getMessage());
         }
     }
 
     /**
-     * Lists scheduled tasks recorded by Telescope
-     * 
+     * Lists scheduled tasks recorded by Telescope.
+     *
      * @param array $params Query parameters
+     *
      * @return array Response in MCP format
      */
     protected function listScheduledTasks(array $params): array
     {
         // Set query limit
-        $limit = isset($params['limit']) ? min((int)$params['limit'], 100) : 50;
+        $limit = isset($params['limit']) ? min((int) $params['limit'], 100) : 50;
 
         // Configure options
         $options = new EntryQueryOptions();
@@ -139,7 +137,7 @@ class ScheduleTool extends AbstractTool
         $entries = $this->entriesRepository->get(EntryType::SCHEDULED_TASK, $options);
 
         if (empty($entries)) {
-            return $this->formatResponse("No scheduled tasks found.");
+            return $this->formatResponse('No scheduled tasks found.');
         }
 
         $tasks = [];
@@ -154,7 +152,7 @@ class ScheduleTool extends AbstractTool
             $description = $content['description'] ?? '';
             $output = $content['output'] ?? '';
             $exitCode = $content['exit_code'] ?? null;
-            $status = $exitCode === 0 ? 'Success' : ($exitCode === null ? 'Running' : 'Failed');
+            $status = 0 === $exitCode ? 'Success' : (null === $exitCode ? 'Running' : 'Failed');
 
             $tasks[] = [
                 'id' => $entry->id,
@@ -162,28 +160,35 @@ class ScheduleTool extends AbstractTool
                 'expression' => $expression,
                 'description' => $description,
                 'status' => $status,
-                'created_at' => $createdAt
+                'created_at' => $createdAt,
             ];
         }
 
         // Tabular formatting for better readability
         $table = "Scheduled Tasks:\n\n";
-        $table .= sprintf("%-5s %-30s %-15s %-30s %-10s %-20s\n", 
-            "ID", "Command", "Expression", "Description", "Status", "Created At");
-        $table .= str_repeat("-", 120) . "\n";
+        $table .= sprintf(
+            "%-5s %-30s %-15s %-30s %-10s %-20s\n",
+            'ID',
+            'Command',
+            'Expression',
+            'Description',
+            'Status',
+            'Created At'
+        );
+        $table .= str_repeat('-', 120)."\n";
 
         foreach ($tasks as $task) {
             // Truncate fields if too long
             $command = $task['command'];
             $command = $this->safeString($command);
             if (strlen($command) > 30) {
-                $command = substr($command, 0, 27) . "...";
+                $command = substr($command, 0, 27).'...';
             }
 
             $description = $task['description'];
             $description = $this->safeString($description);
             if (strlen($description) > 30) {
-                $description = substr($description, 0, 27) . "...";
+                $description = substr($description, 0, 27).'...';
             }
 
             $table .= sprintf(
@@ -201,14 +206,15 @@ class ScheduleTool extends AbstractTool
     }
 
     /**
-     * Gets details of a specific scheduled task
-     * 
+     * Gets details of a specific scheduled task.
+     *
      * @param string $id The scheduled task ID
+     *
      * @return array Response in MCP format
      */
     protected function getScheduleDetails(string $id): array
     {
-        Logger::info($this->getName() . ' getting details', ['id' => $id]);
+        Logger::info($this->getName().' getting details', ['id' => $id]);
 
         // Fetch the specific entry
         $entry = $this->getEntryDetails(EntryType::SCHEDULED_TASK, $id);
@@ -222,15 +228,15 @@ class ScheduleTool extends AbstractTool
         // Detailed formatting of the scheduled task
         $output = "Scheduled Task Details:\n\n";
         $output .= "ID: {$entry->id}\n";
-        $output .= "Command: " . ($content['command'] ?? 'Unknown') . "\n";
-        $output .= "Expression: " . ($content['expression'] ?? 'Unknown') . "\n";
-        $output .= "Description: " . ($content['description'] ?? 'None') . "\n";
-        
+        $output .= 'Command: '.($content['command'] ?? 'Unknown')."\n";
+        $output .= 'Expression: '.($content['expression'] ?? 'Unknown')."\n";
+        $output .= 'Description: '.($content['description'] ?? 'None')."\n";
+
         $exitCode = $content['exit_code'] ?? null;
-        $status = $exitCode === 0 ? 'Success' : ($exitCode === null ? 'Running' : 'Failed');
+        $status = 0 === $exitCode ? 'Success' : (null === $exitCode ? 'Running' : 'Failed');
         $output .= "Status: {$status}\n";
-        
-        if ($exitCode !== null) {
+
+        if (null !== $exitCode) {
             $output .= "Exit Code: {$exitCode}\n";
         }
 
@@ -239,9 +245,9 @@ class ScheduleTool extends AbstractTool
 
         // Command output
         if (!empty($content['output'])) {
-            $output .= "Command Output:\n" . $content['output'] . "\n\n";
+            $output .= "Command Output:\n".$content['output']."\n\n";
         }
 
         return $this->formatResponse($output);
     }
-} 
+}

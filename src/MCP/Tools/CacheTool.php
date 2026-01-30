@@ -3,13 +3,13 @@
 namespace LucianoTonet\TelescopeMcp\MCP\Tools;
 
 use Laravel\Telescope\Contracts\EntriesRepository;
-use LucianoTonet\TelescopeMcp\Support\Logger;
-use LucianoTonet\TelescopeMcp\Support\DateFormatter;
 use Laravel\Telescope\EntryType;
 use Laravel\Telescope\Storage\EntryQueryOptions;
+use LucianoTonet\TelescopeMcp\Support\DateFormatter;
+use LucianoTonet\TelescopeMcp\Support\Logger;
 
 /**
- * Tool for interacting with cache operations recorded by Telescope
+ * Tool for interacting with cache operations recorded by Telescope.
  */
 class CacheTool extends AbstractTool
 {
@@ -19,8 +19,8 @@ class CacheTool extends AbstractTool
     protected $entriesRepository;
 
     /**
-     * CacheTool constructor
-     * 
+     * CacheTool constructor.
+     *
      * @param EntriesRepository $entriesRepository The Telescope entries repository
      */
     public function __construct(EntriesRepository $entriesRepository)
@@ -29,9 +29,7 @@ class CacheTool extends AbstractTool
     }
 
     /**
-     * Returns the tool's short name
-     * 
-     * @return string
+     * Returns the tool's short name.
      */
     public function getShortName(): string
     {
@@ -39,9 +37,7 @@ class CacheTool extends AbstractTool
     }
 
     /**
-     * Returns the tool's schema
-     * 
-     * @return array
+     * Returns the tool's schema.
      */
     public function getSchema(): array
     {
@@ -53,24 +49,24 @@ class CacheTool extends AbstractTool
                 'properties' => [
                     'id' => [
                         'type' => 'string',
-                        'description' => 'ID of the specific cache operation to view details'
+                        'description' => 'ID of the specific cache operation to view details',
                     ],
                     'limit' => [
                         'type' => 'integer',
                         'description' => 'Maximum number of cache operations to return',
-                        'default' => 50
+                        'default' => 50,
                     ],
                     'operation' => [
                         'type' => 'string',
                         'description' => 'Filter by operation type (hit, miss, set, forget)',
-                        'enum' => ['hit', 'miss', 'set', 'forget']
+                        'enum' => ['hit', 'miss', 'set', 'forget'],
                     ],
                     'key' => [
                         'type' => 'string',
-                        'description' => 'Filter by cache key (partial match)'
-                    ]
+                        'description' => 'Filter by cache key (partial match)',
+                    ],
                 ],
-                'required' => []
+                'required' => [],
             ],
             'outputSchema' => [
                 'type' => 'object',
@@ -81,40 +77,41 @@ class CacheTool extends AbstractTool
                             'type' => 'object',
                             'properties' => [
                                 'type' => ['type' => 'string'],
-                                'text' => ['type' => 'string']
+                                'text' => ['type' => 'string'],
                             ],
-                            'required' => ['type', 'text']
-                        ]
-                    ]
+                            'required' => ['type', 'text'],
+                        ],
+                    ],
                 ],
-                'required' => ['content']
+                'required' => ['content'],
             ],
             'examples' => [
                 [
                     'description' => 'List last 10 cache operations',
-                    'params' => ['limit' => 10]
+                    'params' => ['limit' => 10],
                 ],
                 [
                     'description' => 'Get details of a specific cache operation',
-                    'params' => ['id' => '12345']
+                    'params' => ['id' => '12345'],
                 ],
                 [
                     'description' => 'List cache misses',
-                    'params' => ['operation' => 'miss']
-                ]
-            ]
+                    'params' => ['operation' => 'miss'],
+                ],
+            ],
         ];
     }
 
     /**
-     * Executes the tool with the given parameters
-     * 
+     * Executes the tool with the given parameters.
+     *
      * @param array $params Tool parameters
+     *
      * @return array Response in MCP format
      */
     public function execute(array $params): array
     {
-        Logger::info($this->getName() . ' execute method called', ['params' => $params]);
+        Logger::info($this->getName().' execute method called', ['params' => $params]);
 
         try {
             // Check if details of a specific cache operation were requested
@@ -124,41 +121,42 @@ class CacheTool extends AbstractTool
 
             return $this->listCache($params);
         } catch (\Exception $e) {
-            Logger::error($this->getName() . ' execution error', [
+            Logger::error($this->getName().' execution error', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
-            return $this->formatError('Error: ' . $e->getMessage());
+            return $this->formatError('Error: '.$e->getMessage());
         }
     }
 
     /**
-     * Lists cache operations
-     * 
+     * Lists cache operations.
+     *
      * @param array $params Tool parameters
+     *
      * @return array Response in MCP format
      */
     protected function listCache(array $params): array
     {
-        Logger::info($this->getName() . ' listing entries', $params);
+        Logger::info($this->getName().' listing entries', $params);
 
         // Create query options
         $options = new EntryQueryOptions($params['limit'] ?? 50);
 
         // Add filters if specified
         if (!empty($params['operation'])) {
-            $options->tag('operation:' . strtolower($params['operation']));
+            $options->tag('operation:'.strtolower($params['operation']));
         }
         if (!empty($params['key'])) {
-            $options->tag('key:' . $params['key']);
+            $options->tag('key:'.$params['key']);
         }
 
         // Fetch entries using the repository
         $entries = $this->entriesRepository->get(EntryType::CACHE, $options);
 
         if (empty($entries)) {
-            return $this->formatResponse("No cache operations found.");
+            return $this->formatResponse('No cache operations found.');
         }
 
         $operations = [];
@@ -177,25 +175,32 @@ class CacheTool extends AbstractTool
                 'operation' => $operation,
                 'key' => $key,
                 'duration' => $duration,
-                'created_at' => $createdAt
+                'created_at' => $createdAt,
             ];
         }
 
         // Tabular formatting for better readability
         $table = "Cache Operations:\n\n";
-        $table .= sprintf("%-5s %-8s %-50s %-10s %-20s\n", 
-            "ID", "Type", "Key", "Time (ms)", "Created At");
-        $table .= str_repeat("-", 100) . "\n";
+        $table .= sprintf(
+            "%-5s %-8s %-50s %-10s %-20s\n",
+            'ID',
+            'Type',
+            'Key',
+            'Time (ms)',
+            'Created At'
+        );
+        $table .= str_repeat('-', 100)."\n";
 
         foreach ($operations as $op) {
             // Truncate key if too long
             $key = $op['key'];
             $key = $this->safeString($key);
             if (strlen($key) > 50) {
-                $key = substr($key, 0, 47) . "...";
+                $key = substr($key, 0, 47).'...';
             }
 
-            $table .= sprintf("%-5s %-8s %-50s %-10.2f %-20s\n",
+            $table .= sprintf(
+                "%-5s %-8s %-50s %-10.2f %-20s\n",
                 $op['id'],
                 $op['operation'],
                 $key,
@@ -208,14 +213,15 @@ class CacheTool extends AbstractTool
     }
 
     /**
-     * Gets details of a specific cache operation
-     * 
+     * Gets details of a specific cache operation.
+     *
      * @param string $id The cache operation ID
+     *
      * @return array Response in MCP format
      */
     protected function getCacheDetails(string $id): array
     {
-        Logger::info($this->getName() . ' getting details', ['id' => $id]);
+        Logger::info($this->getName().' getting details', ['id' => $id]);
 
         // Fetch the specific entry
         $entry = $this->getEntryDetails(EntryType::CACHE, $id);
@@ -229,10 +235,10 @@ class CacheTool extends AbstractTool
         // Detailed formatting of the cache operation
         $output = "Cache Operation Details:\n\n";
         $output .= "ID: {$entry->id}\n";
-        $output .= "Operation: " . ($content['type'] ?? 'Unknown') . "\n";
-        $output .= "Key: " . ($content['key'] ?? 'Unknown') . "\n";
-        $output .= "Duration: " . number_format(($content['duration'] ?? 0), 2) . " ms\n";
-        
+        $output .= 'Operation: '.($content['type'] ?? 'Unknown')."\n";
+        $output .= 'Key: '.($content['key'] ?? 'Unknown')."\n";
+        $output .= 'Duration: '.number_format($content['duration'] ?? 0, 2)." ms\n";
+
         $createdAt = DateFormatter::format($entry->createdAt);
         $output .= "Created At: {$createdAt}\n\n";
 
@@ -240,9 +246,9 @@ class CacheTool extends AbstractTool
         if (isset($content['value'])) {
             $output .= "Value:\n";
             if (is_array($content['value']) || is_object($content['value'])) {
-                $output .= json_encode($content['value'], JSON_PRETTY_PRINT) . "\n";
+                $output .= json_encode($content['value'], JSON_PRETTY_PRINT)."\n";
             } else {
-                $output .= $content['value'] . "\n";
+                $output .= $content['value']."\n";
             }
         }
 
@@ -250,10 +256,11 @@ class CacheTool extends AbstractTool
     }
 
     /**
-     * Obtém os detalhes de uma entrada específica do Telescope
+     * Obtém os detalhes de uma entrada específica do Telescope.
      *
      * @param string $entryType
      * @param string $id
+     *
      * @return mixed
      */
     protected function getEntryDetails($entryType, $id)
@@ -263,13 +270,13 @@ class CacheTool extends AbstractTool
         try {
             return $this->entriesRepository->find($id);
         } catch (\Exception $e) {
-            Logger::error("Failed to get entry details", [
+            Logger::error('Failed to get entry details', [
                 'id' => $id,
                 'entryType' => $entryType,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             throw new \Exception("Entry not found: {$id}");
         }
     }
-} 
+}

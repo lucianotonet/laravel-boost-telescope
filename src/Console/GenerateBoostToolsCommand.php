@@ -38,8 +38,9 @@ class GenerateBoostToolsCommand extends Command
 
         $basePath = base_path('vendor/lucianotonet/laravel-telescope-mcp/src/BoostExtension/Tools');
 
-        if (!is_dir($basePath) && !mkdir($basePath, 0755, true)) {
+        if (!is_dir($basePath) && !mkdir($basePath, 0o755, true)) {
             $this->error("Failed to create directory: {$basePath}");
+
             return self::FAILURE;
         }
 
@@ -50,12 +51,14 @@ class GenerateBoostToolsCommand extends Command
 
             if (file_exists($filePath)) {
                 $this->warn("Skipping {$className} (already exists)");
+
                 continue;
             }
 
             $content = $this->generateToolClass($tool);
-            if (file_put_contents($filePath, $content) === false) {
+            if (false === file_put_contents($filePath, $content)) {
                 $this->error("Failed to write {$fileName} to {$basePath}");
+
                 continue;
             }
 
@@ -72,36 +75,36 @@ class GenerateBoostToolsCommand extends Command
     {
         $className = "Telescope{$toolName}Tool";
         $toolNameSnake = Str::snake($toolName);
-        
+
         return <<<PHP
-<?php
+            <?php
 
-namespace LucianoTonet\\TelescopeMcp\\BoostExtension\\Tools;
+            namespace LucianoTonet\\TelescopeMcp\\BoostExtension\\Tools;
 
-use Illuminate\\Contracts\\JsonSchema\\JsonSchema;
-use LucianoTonet\\TelescopeMcp\\BoostExtension\\TelescopeBoostTool;
+            use Illuminate\\Contracts\\JsonSchema\\JsonSchema;
+            use LucianoTonet\\TelescopeMcp\\BoostExtension\\TelescopeBoostTool;
 
-class {$className} extends TelescopeBoostTool
-{
-    protected string \$name = 'telescope_{$toolNameSnake}';
+            class {$className} extends TelescopeBoostTool
+            {
+                protected string \$name = 'telescope_{$toolNameSnake}';
 
-    public function description(): string
-    {
-        return 'Access {$toolName} data from Laravel Telescope';
-    }
+                public function description(): string
+                {
+                    return 'Access {$toolName} data from Laravel Telescope';
+                }
 
-    /**
-     * @return array<string, mixed>
-     */
-    public function schema(JsonSchema \$schema): array
-    {
-        return [
-            'id' => \$schema->string()->description('Get details of a specific entry by ID'),
-            'limit' => \$schema->integer()->default(50)->description('Maximum number of entries to return'),
-        ];
-    }
-}
+                /**
+                 * @return array<string, mixed>
+                 */
+                public function schema(JsonSchema \$schema): array
+                {
+                    return [
+                        'id' => \$schema->string()->description('Get details of a specific entry by ID'),
+                        'limit' => \$schema->integer()->default(50)->description('Maximum number of entries to return'),
+                    ];
+                }
+            }
 
-PHP;
+            PHP;
     }
 }

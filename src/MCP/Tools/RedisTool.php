@@ -3,13 +3,13 @@
 namespace LucianoTonet\TelescopeMcp\MCP\Tools;
 
 use Laravel\Telescope\Contracts\EntriesRepository;
-use LucianoTonet\TelescopeMcp\Support\Logger;
-use LucianoTonet\TelescopeMcp\Support\DateFormatter;
 use Laravel\Telescope\EntryType;
 use Laravel\Telescope\Storage\EntryQueryOptions;
+use LucianoTonet\TelescopeMcp\Support\DateFormatter;
+use LucianoTonet\TelescopeMcp\Support\Logger;
 
 /**
- * Tool for interacting with Redis operations recorded by Telescope
+ * Tool for interacting with Redis operations recorded by Telescope.
  */
 class RedisTool extends AbstractTool
 {
@@ -19,8 +19,8 @@ class RedisTool extends AbstractTool
     protected $entriesRepository;
 
     /**
-     * RedisTool constructor
-     * 
+     * RedisTool constructor.
+     *
      * @param EntriesRepository $entriesRepository The Telescope entries repository
      */
     public function __construct(EntriesRepository $entriesRepository)
@@ -29,9 +29,7 @@ class RedisTool extends AbstractTool
     }
 
     /**
-     * Returns the tool's short name
-     * 
-     * @return string
+     * Returns the tool's short name.
      */
     public function getShortName(): string
     {
@@ -39,9 +37,7 @@ class RedisTool extends AbstractTool
     }
 
     /**
-     * Returns the tool's schema
-     * 
-     * @return array
+     * Returns the tool's schema.
      */
     public function getSchema(): array
     {
@@ -53,19 +49,19 @@ class RedisTool extends AbstractTool
                 'properties' => [
                     'id' => [
                         'type' => 'string',
-                        'description' => 'ID of the specific Redis operation to view details'
+                        'description' => 'ID of the specific Redis operation to view details',
                     ],
                     'limit' => [
                         'type' => 'integer',
                         'description' => 'Maximum number of Redis operations to return',
-                        'default' => 50
+                        'default' => 50,
                     ],
                     'command' => [
                         'type' => 'string',
-                        'description' => 'Filter by Redis command (e.g., GET, SET, DEL)'
-                    ]
+                        'description' => 'Filter by Redis command (e.g., GET, SET, DEL)',
+                    ],
                 ],
-                'required' => []
+                'required' => [],
             ],
             'outputSchema' => [
                 'type' => 'object',
@@ -76,40 +72,41 @@ class RedisTool extends AbstractTool
                             'type' => 'object',
                             'properties' => [
                                 'type' => ['type' => 'string'],
-                                'text' => ['type' => 'string']
+                                'text' => ['type' => 'string'],
                             ],
-                            'required' => ['type', 'text']
-                        ]
-                    ]
+                            'required' => ['type', 'text'],
+                        ],
+                    ],
                 ],
-                'required' => ['content']
+                'required' => ['content'],
             ],
             'examples' => [
                 [
                     'description' => 'List last 10 Redis operations',
-                    'params' => ['limit' => 10]
+                    'params' => ['limit' => 10],
                 ],
                 [
                     'description' => 'Get details of a specific Redis operation',
-                    'params' => ['id' => '12345']
+                    'params' => ['id' => '12345'],
                 ],
                 [
                     'description' => 'List all SET operations',
-                    'params' => ['command' => 'SET']
-                ]
-            ]
+                    'params' => ['command' => 'SET'],
+                ],
+            ],
         ];
     }
 
     /**
-     * Executes the tool with the given parameters
-     * 
+     * Executes the tool with the given parameters.
+     *
      * @param array $params Tool parameters
+     *
      * @return array Response in MCP format
      */
     public function execute(array $params): array
     {
-        Logger::info($this->getName() . ' execute method called', ['params' => $params]);
+        Logger::info($this->getName().' execute method called', ['params' => $params]);
 
         try {
             // Check if details of a specific Redis operation were requested
@@ -119,25 +116,26 @@ class RedisTool extends AbstractTool
 
             return $this->listRedisOperations($params);
         } catch (\Exception $e) {
-            Logger::error($this->getName() . ' execution error', [
+            Logger::error($this->getName().' execution error', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
-            return $this->formatError('Error: ' . $e->getMessage());
+            return $this->formatError('Error: '.$e->getMessage());
         }
     }
 
     /**
-     * Lists Redis operations recorded by Telescope
-     * 
+     * Lists Redis operations recorded by Telescope.
+     *
      * @param array $params Query parameters
+     *
      * @return array Response in MCP format
      */
     protected function listRedisOperations(array $params): array
     {
         // Set query limit
-        $limit = isset($params['limit']) ? min((int)$params['limit'], 100) : 50;
+        $limit = isset($params['limit']) ? min((int) $params['limit'], 100) : 50;
 
         // Configure options
         $options = new EntryQueryOptions();
@@ -145,14 +143,14 @@ class RedisTool extends AbstractTool
 
         // Add filters if specified
         if (!empty($params['command'])) {
-            $options->tag('command:' . strtoupper($params['command']));
+            $options->tag('command:'.strtoupper($params['command']));
         }
 
         // Fetch entries using the repository
         $entries = $this->entriesRepository->get(EntryType::REDIS, $options);
 
         if (empty($entries)) {
-            return $this->formatResponse("No Redis operations found.");
+            return $this->formatResponse('No Redis operations found.');
         }
 
         $operations = [];
@@ -171,26 +169,33 @@ class RedisTool extends AbstractTool
                 'command' => $command,
                 'parameters' => $parameters,
                 'duration' => $duration,
-                'created_at' => $createdAt
+                'created_at' => $createdAt,
             ];
         }
 
         // Tabular formatting for better readability
         $table = "Redis Operations:\n\n";
-        $table .= sprintf("%-5s %-15s %-50s %-10s %-20s\n", 
-            "ID", "Command", "Parameters", "Time (ms)", "Created At");
-        $table .= str_repeat("-", 120) . "\n";
+        $table .= sprintf(
+            "%-5s %-15s %-50s %-10s %-20s\n",
+            'ID',
+            'Command',
+            'Parameters',
+            'Time (ms)',
+            'Created At'
+        );
+        $table .= str_repeat('-', 120)."\n";
 
         foreach ($operations as $op) {
             // Format parameters for display
-            $params = implode(' ', array_map(function($param) {
+            $params = implode(' ', array_map(function ($param) {
                 $paramStr = $this->safeString($param);
-                return strlen($paramStr) > 20 ? substr($paramStr, 0, 17) . "..." : $paramStr;
+
+                return strlen($paramStr) > 20 ? substr($paramStr, 0, 17).'...' : $paramStr;
             }, $op['parameters']));
 
             $params = $this->safeString($params);
             if (strlen($params) > 50) {
-                $params = substr($params, 0, 47) . "...";
+                $params = substr($params, 0, 47).'...';
             }
 
             $table .= sprintf(
@@ -207,14 +212,15 @@ class RedisTool extends AbstractTool
     }
 
     /**
-     * Gets details of a specific Redis operation
-     * 
+     * Gets details of a specific Redis operation.
+     *
      * @param string $id The Redis operation ID
+     *
      * @return array Response in MCP format
      */
     protected function getRedisDetails(string $id): array
     {
-        Logger::info($this->getName() . ' getting details', ['id' => $id]);
+        Logger::info($this->getName().' getting details', ['id' => $id]);
 
         // Fetch the specific entry
         $entry = $this->getEntryDetails(EntryType::REDIS, $id);
@@ -228,8 +234,8 @@ class RedisTool extends AbstractTool
         // Detailed formatting of the Redis operation
         $output = "Redis Operation Details:\n\n";
         $output .= "ID: {$entry->id}\n";
-        $output .= "Command: " . ($content['command'] ?? 'Unknown') . "\n";
-        $output .= "Duration: " . number_format(($content['duration'] ?? 0), 2) . " ms\n";
+        $output .= 'Command: '.($content['command'] ?? 'Unknown')."\n";
+        $output .= 'Duration: '.number_format($content['duration'] ?? 0, 2)." ms\n";
 
         $createdAt = DateFormatter::format($entry->createdAt);
         $output .= "Created At: {$createdAt}\n\n";
@@ -245,14 +251,14 @@ class RedisTool extends AbstractTool
 
         // Connection
         if (!empty($content['connection'])) {
-            $output .= "Connection: " . $content['connection'] . "\n\n";
+            $output .= 'Connection: '.$content['connection']."\n\n";
         }
 
         // Result (if available)
         if (isset($content['result'])) {
-            $output .= "Result:\n" . json_encode($content['result'], JSON_PRETTY_PRINT) . "\n";
+            $output .= "Result:\n".json_encode($content['result'], JSON_PRETTY_PRINT)."\n";
         }
 
         return $this->formatResponse($output);
     }
-} 
+}

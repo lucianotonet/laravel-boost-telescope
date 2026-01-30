@@ -10,7 +10,8 @@ test('it formats dates correctly', function () {
 
     expect($formatted)
         ->toBeString()
-        ->toMatch('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/');
+        ->toMatch('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/')
+    ;
 });
 
 test('it handles null dates', function () {
@@ -62,7 +63,8 @@ test('abstract tool can format responses correctly', function () {
         ->toHaveKey('content')
         ->and($response['content'])->toBeArray()
         ->and($response['content'][0])->toHaveKeys(['type', 'text'])
-        ->and($response['content'][0]['type'])->toBe('text');
+        ->and($response['content'][0]['type'])->toBe('text')
+    ;
 });
 
 test('abstract tool can format error responses', function () {
@@ -93,7 +95,8 @@ test('abstract tool can format error responses', function () {
     expect($response)
         ->toBeArray()
         ->toHaveKey('content')
-        ->and($response['content'][0]['text'])->toContain('Error: Test error message');
+        ->and($response['content'][0]['text'])->toContain('Error: Test error message')
+    ;
 });
 
 test('abstract tool getName returns short name', function () {

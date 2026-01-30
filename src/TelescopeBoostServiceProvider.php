@@ -3,6 +3,7 @@
 namespace LucianoTonet\TelescopeMcp;
 
 use Illuminate\Support\ServiceProvider;
+use Laravel\Boost\Boost;
 use LucianoTonet\TelescopeMcp\Support\Logger;
 
 /**
@@ -35,6 +36,14 @@ class TelescopeBoostServiceProvider extends ServiceProvider
     {
         // This provider is focused on Boost integration
         // Core MCP functionality is in TelescopeMcpServiceProvider
+    }
+
+    /**
+     * Get the services provided by the provider.
+     */
+    public function provides(): array
+    {
+        return [];
     }
 
     /**
@@ -77,20 +86,20 @@ class TelescopeBoostServiceProvider extends ServiceProvider
             BoostExtension\Tools\TelescopeQueriesTool::class,
             BoostExtension\Tools\TelescopeRequestsTool::class,
             BoostExtension\Tools\TelescopeLogsTool::class,
-            
+
             // Queue & Jobs Tools
             BoostExtension\Tools\TelescopeJobsTool::class,
             BoostExtension\Tools\TelescopeBatchesTool::class,
-            
+
             // Cache & Data Tools
             BoostExtension\Tools\TelescopeCacheTool::class,
             BoostExtension\Tools\TelescopeRedisTool::class,
             BoostExtension\Tools\TelescopeModelsTool::class,
-            
+
             // Communication Tools
             BoostExtension\Tools\TelescopeMailTool::class,
             BoostExtension\Tools\TelescopeNotificationsTool::class,
-            
+
             // System Tools
             BoostExtension\Tools\TelescopeCommandsTool::class,
             BoostExtension\Tools\TelescopeScheduleTool::class,
@@ -99,7 +108,7 @@ class TelescopeBoostServiceProvider extends ServiceProvider
             BoostExtension\Tools\TelescopeViewsTool::class,
             BoostExtension\Tools\TelescopeDumpsTool::class,
             BoostExtension\Tools\TelescopeHttpClientTool::class,
-            
+
             // Maintenance Tools
             BoostExtension\Tools\TelescopePruneTool::class,
         ];
@@ -113,14 +122,6 @@ class TelescopeBoostServiceProvider extends ServiceProvider
      */
     protected function boostIsInstalled(): bool
     {
-        return class_exists(\Laravel\Boost\Boost::class);
-    }
-
-    /**
-     * Get the services provided by the provider.
-     */
-    public function provides(): array
-    {
-        return [];
+        return class_exists(Boost::class);
     }
 }

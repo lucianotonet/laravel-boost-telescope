@@ -2,6 +2,8 @@
 
 namespace LucianoTonet\TelescopeMcp\BoostExtension;
 
+use Laravel\Mcp\Request;
+use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Tool;
 use LucianoTonet\TelescopeMcp\MCP\TelescopeMcpServer;
 
@@ -20,11 +22,11 @@ abstract class TelescopeBoostTool extends Tool
     /**
      * Execute the tool with given arguments.
      *
-     * @param  array<string, mixed>|\Laravel\Mcp\Request  $arguments
+     * @param array<string, mixed>|Request $arguments
      */
-    public function handle(array|\Laravel\Mcp\Request $arguments): \Laravel\Mcp\Response
+    public function handle(array|Request $arguments): Response
     {
-        if ($arguments instanceof \Laravel\Mcp\Request) {
+        if ($arguments instanceof Request) {
             $arguments = $arguments->all();
         }
 
@@ -35,13 +37,13 @@ abstract class TelescopeBoostTool extends Tool
         $result = $this->server->executeTool($toolName, $arguments);
 
         // Return structured JSON response as expected by Laravel Boost
-        return \Laravel\Mcp\Response::json($result);
+        return Response::json($result);
     }
 
     /**
      * Extract tool name from class name.
      * Example: TelescopeExceptionsTool -> exceptions
-     * Example: TelescopeHttpClientTool -> http-client
+     * Example: TelescopeHttpClientTool -> http-client.
      */
     protected function getToolNameFromClass(): string
     {

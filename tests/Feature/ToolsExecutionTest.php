@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use LucianoTonet\TelescopeMcp\MCP\TelescopeMcpServer;
 
 beforeEach(function () {
@@ -18,11 +18,12 @@ test('logs tool can be executed', function () {
         ->toBeArray()
         ->toHaveKey('content')
         ->and($result['content'])->toBeArray()
-        ->and($result['content'][0])->toHaveKeys(['type', 'text']);
+        ->and($result['content'][0])->toHaveKeys(['type', 'text'])
+    ;
 });
 
 test('logs tool respects limit parameter', function () {
-    for ($i = 0; $i < 5; $i++) {
+    for ($i = 0; $i < 5; ++$i) {
         Log::info("Test log message {$i}");
     }
 
@@ -38,7 +39,8 @@ test('requests tool can be executed', function () {
         ->toBeArray()
         ->toHaveKey('content')
         ->and($result['content'])->toBeArray()
-        ->and($result['content'][0])->toHaveKeys(['type', 'text']);
+        ->and($result['content'][0])->toHaveKeys(['type', 'text'])
+    ;
 });
 
 test('exceptions tool can be executed', function () {
@@ -47,7 +49,8 @@ test('exceptions tool can be executed', function () {
     expect($result)
         ->toBeArray()
         ->toHaveKey('content')
-        ->and($result['content'])->toBeArray();
+        ->and($result['content'])->toBeArray()
+    ;
 });
 
 test('queries tool can be executed', function () {
@@ -58,7 +61,8 @@ test('queries tool can be executed', function () {
     expect($result)
         ->toBeArray()
         ->toHaveKey('content')
-        ->and($result['content'])->toBeArray();
+        ->and($result['content'])->toBeArray()
+    ;
 });
 
 test('queries tool can filter slow queries', function () {
@@ -79,7 +83,8 @@ test('cache tool can be executed', function () {
     expect($result)
         ->toBeArray()
         ->toHaveKey('content')
-        ->and($result['content'])->toBeArray();
+        ->and($result['content'])->toBeArray()
+    ;
 });
 
 test('events tool can be executed', function () {
@@ -87,7 +92,8 @@ test('events tool can be executed', function () {
 
     expect($result)
         ->toBeArray()
-        ->toHaveKey('content');
+        ->toHaveKey('content')
+    ;
 });
 
 test('jobs tool can be executed', function () {
@@ -95,7 +101,8 @@ test('jobs tool can be executed', function () {
 
     expect($result)
         ->toBeArray()
-        ->toHaveKey('content');
+        ->toHaveKey('content')
+    ;
 });
 
 test('jobs tool can filter failed jobs', function () {
@@ -112,7 +119,8 @@ test('commands tool can be executed', function () {
 
     expect($result)
         ->toBeArray()
-        ->toHaveKey('content');
+        ->toHaveKey('content')
+    ;
 });
 
 test('schedule tool can be executed', function () {
@@ -120,7 +128,8 @@ test('schedule tool can be executed', function () {
 
     expect($result)
         ->toBeArray()
-        ->toHaveKey('content');
+        ->toHaveKey('content')
+    ;
 });
 
 test('mail tool can be executed', function () {
@@ -128,7 +137,8 @@ test('mail tool can be executed', function () {
 
     expect($result)
         ->toBeArray()
-        ->toHaveKey('content');
+        ->toHaveKey('content')
+    ;
 });
 
 test('notifications tool can be executed', function () {
@@ -136,7 +146,8 @@ test('notifications tool can be executed', function () {
 
     expect($result)
         ->toBeArray()
-        ->toHaveKey('content');
+        ->toHaveKey('content')
+    ;
 });
 
 test('gates tool can be executed', function () {
@@ -144,7 +155,8 @@ test('gates tool can be executed', function () {
 
     expect($result)
         ->toBeArray()
-        ->toHaveKey('content');
+        ->toHaveKey('content')
+    ;
 });
 
 test('models tool can be executed', function () {
@@ -152,7 +164,8 @@ test('models tool can be executed', function () {
 
     expect($result)
         ->toBeArray()
-        ->toHaveKey('content');
+        ->toHaveKey('content')
+    ;
 });
 
 test('views tool can be executed', function () {
@@ -160,7 +173,8 @@ test('views tool can be executed', function () {
 
     expect($result)
         ->toBeArray()
-        ->toHaveKey('content');
+        ->toHaveKey('content')
+    ;
 });
 
 test('dumps tool can be executed', function () {
@@ -168,7 +182,8 @@ test('dumps tool can be executed', function () {
 
     expect($result)
         ->toBeArray()
-        ->toHaveKey('content');
+        ->toHaveKey('content')
+    ;
 });
 
 test('batches tool can be executed', function () {
@@ -176,7 +191,8 @@ test('batches tool can be executed', function () {
 
     expect($result)
         ->toBeArray()
-        ->toHaveKey('content');
+        ->toHaveKey('content')
+    ;
 });
 
 test('redis tool can be executed', function () {
@@ -184,7 +200,8 @@ test('redis tool can be executed', function () {
 
     expect($result)
         ->toBeArray()
-        ->toHaveKey('content');
+        ->toHaveKey('content')
+    ;
 });
 
 test('http-client tool can be executed', function () {
@@ -192,7 +209,8 @@ test('http-client tool can be executed', function () {
 
     expect($result)
         ->toBeArray()
-        ->toHaveKey('content');
+        ->toHaveKey('content')
+    ;
 });
 
 test('prune tool can be executed', function () {
@@ -200,7 +218,8 @@ test('prune tool can be executed', function () {
 
     expect($result)
         ->toBeArray()
-        ->toHaveKey('content');
+        ->toHaveKey('content')
+    ;
 });
 
 test('tool responses have valid MCP format', function () {
@@ -208,7 +227,8 @@ test('tool responses have valid MCP format', function () {
 
     expect($result)
         ->toHaveKey('content')
-        ->and($result['content'])->toBeArray();
+        ->and($result['content'])->toBeArray()
+    ;
 
     foreach ($result['content'] as $item) {
         expect($item)

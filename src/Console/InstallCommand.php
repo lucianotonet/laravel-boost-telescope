@@ -35,30 +35,31 @@ class InstallCommand extends Command
     protected function registerWithBoost(): void
     {
         $boostConfigPath = base_path('boost.json');
-        
+
         try {
             $config = json_decode(File::get($boostConfigPath), true);
-            
+
             if (!is_array($config)) {
                 $this->error('Invalid boost.json file.');
+
                 return;
             }
 
             $packageName = 'lucianotonet/laravel-telescope-mcp';
 
-            if (! isset($config['packages'])) {
+            if (!isset($config['packages'])) {
                 $config['packages'] = [];
             }
 
-            if (! in_array($packageName, $config['packages'])) {
+            if (!in_array($packageName, $config['packages'])) {
                 $config['packages'][] = $packageName;
-                
+
                 // Sort packages alphabetically for cleaner config
                 sort($config['packages']);
 
                 File::put($boostConfigPath, json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
                 $this->info('Registered package with Laravel Boost configuration.');
-                
+
                 // Run boost:update to apply changes
                 $this->info('Updating Boost guidelines and skills...');
                 $this->call('boost:update');
@@ -66,7 +67,7 @@ class InstallCommand extends Command
                 $this->comment('Package already registered in boost.json.');
             }
         } catch (\Exception $e) {
-            $this->error('Failed to update boost.json: ' . $e->getMessage());
+            $this->error('Failed to update boost.json: '.$e->getMessage());
         }
     }
 }

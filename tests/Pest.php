@@ -11,11 +11,13 @@
 |
 */
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 pest()->extend(TestCase::class)
-    ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
-    ->in('Feature');
+    ->use(RefreshDatabase::class)
+    ->in('Feature')
+;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,5 +38,6 @@ expect()->extend('toBeValidMcpToolResponse', function () {
     return $this->toHaveKey('content')
         ->and($this->value['content'])->toBeArray()
         ->and($this->value['content'])->not->toBeEmpty()
-        ->and($this->value['content'][0])->toHaveKeys(['type', 'text']);
+        ->and($this->value['content'][0])->toHaveKeys(['type', 'text'])
+    ;
 });
