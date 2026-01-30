@@ -37,9 +37,10 @@ class GenerateBoostToolsCommand extends Command
         $this->info('Generating Boost tool wrappers...');
 
         $basePath = base_path('vendor/lucianotonet/laravel-telescope-mcp/src/BoostExtension/Tools');
-        
-        if (!is_dir($basePath)) {
-            mkdir($basePath, 0755, true);
+
+        if (!is_dir($basePath) && !mkdir($basePath, 0755, true)) {
+            $this->error("Failed to create directory: {$basePath}");
+            return self::FAILURE;
         }
 
         foreach ($this->tools as $tool) {
@@ -53,8 +54,11 @@ class GenerateBoostToolsCommand extends Command
             }
 
             $content = $this->generateToolClass($tool);
-            file_put_contents($filePath, $content);
-            
+            if (file_put_contents($filePath, $content) === false) {
+                $this->error("Failed to write {$fileName} to {$basePath}");
+                continue;
+            }
+
             $this->info("✓ Generated {$className}");
         }
 
