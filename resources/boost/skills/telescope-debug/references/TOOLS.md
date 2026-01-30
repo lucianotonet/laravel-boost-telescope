@@ -1,6 +1,6 @@
 # Telescope MCP Tools Reference
 
-Complete technical reference for all 20 Telescope MCP tools.
+Complete technical reference for all 19 Telescope MCP tools.
 
 ## Tool Index
 
