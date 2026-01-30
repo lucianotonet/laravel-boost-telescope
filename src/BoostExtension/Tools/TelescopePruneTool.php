@@ -11,7 +11,7 @@ class TelescopePruneTool extends TelescopeBoostTool
 
     public function description(): string
     {
-        return 'Access Prune data from Laravel Telescope';
+        return 'Prune old entries from Laravel Telescope';
     }
 
     /**
@@ -20,8 +20,7 @@ class TelescopePruneTool extends TelescopeBoostTool
     public function schema(JsonSchema $schema): array
     {
         return [
-            'id' => $schema->string()->description('Get details of a specific entry by ID'),
-            'limit' => $schema->integer()->default(50)->description('Maximum number of entries to return'),
+            'hours' => $schema->integer()->default(24)->description('Delete entries older than this many hours'),
         ];
     }
 }
