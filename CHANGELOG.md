@@ -13,7 +13,7 @@ All notable changes to `laravel-telescope-mcp` will be documented in this file.
 ## [1.0.0-beta.1] - 2026-01-30
 
 ### Added
-- Native integration with Laravel Boost via `laravel/mcp` package
+- Native integration with Laravel Boost via `laravel/boost` package
 - 20 Boost tools that register directly in the MCP server
 - `TelescopeBoostTool` base class for tool wrappers
 - `GenerateBoostToolsCommand` for automatic tool generation
