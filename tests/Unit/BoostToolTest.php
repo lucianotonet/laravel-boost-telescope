@@ -13,12 +13,14 @@ uses(TestCase::class);
 
 class TelescopeHttpClientToolTestStub extends TelescopeBoostTool {
     public function description(): string { return ''; }
+    /** @SuppressWarnings(PHPMD.UnusedFormalParameter) */
     public function schema(JsonSchema $schema): array { return []; }
     public function getToolNamePublic() { return $this->getToolNameFromClass(); }
 }
 
 class TelescopeExceptionsToolTestStub extends TelescopeBoostTool {
     public function description(): string { return ''; }
+    /** @SuppressWarnings(PHPMD.UnusedFormalParameter) */
     public function schema(JsonSchema $schema): array { return []; }
     public function getToolNamePublic() { return $this->getToolNameFromClass(); }
 }
