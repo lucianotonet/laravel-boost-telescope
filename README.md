@@ -1,22 +1,15 @@
-# Laravel Telescope MCP
+<p align="center"><img width="837" height="83" src="./art/logo.svg" alt="Logo Laravel Telescope MCP"></p>
 
-**Laravel Boost Telescope Plugin - AI-Powered Debugging**
+**Laravel Boost Plugin for Telescope**
 
-Give AI superpowers to debug your Laravel applications with access to Telescope's rich, structured debugging data.
+Give your AI assistant the power to debug with Telescope's data.
 
+[![Tests](https://github.com/lucianotonet/laravel-telescope-mcp/actions/workflows/tests.yml/badge.svg)](https://github.com/lucianotonet/laravel-telescope-mcp/actions/workflows/tests.yml)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/lucianotonet/laravel-telescope-mcp.svg)](https://packagist.org/packages/lucianotonet/laravel-telescope-mcp)
 [![Total Downloads](https://img.shields.io/packagist/dt/lucianotonet/laravel-telescope-mcp.svg)](https://packagist.org/packages/lucianotonet/laravel-telescope-mcp)
+[![Laravel Boost Plugin](https://img.shields.io/badge/Laravel%20Boost-Plugin-orange)](https://laravel-boost.dev)
+[![MCP Protocol](https://img.shields.io/badge/MCP-Protocol-blue)](https://modelcontextprotocol.io)
 [![License](https://img.shields.io/packagist/l/lucianotonet/laravel-telescope-mcp.svg)](https://packagist.org/packages/lucianotonet/laravel-telescope-mcp)
-
-## The Difference
-
-While Laravel Boost reads log files, this plugin gives your AI assistant access to Telescope's rich, structured debugging data.
-
-| Laravel Boost Alone | + Telescope Plugin |
-|---------------------|-------------------|
-| "Error in log file" | "Query on `orders` table taking 2s due to missing index on `user_id`" |
-| Generic stack trace | Full request context + query history + event timeline |
-| "Job failed" | "Job failed on 3rd retry with payload X after queries Y and Z" |
 
 ## Requirements
 
