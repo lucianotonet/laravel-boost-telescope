@@ -1,15 +1,26 @@
-<p align="center"><img width="837" height="83" src="./art/logo.svg" alt="Logo Laravel Telescope MCP"></p>
+<p align="center"><img width="474" height="47" src="./art/logo.svg" alt="Logo Laravel Telescope MCP"></p>
 
-**Laravel Boost Plugin for Telescope**
+<p align="center">
+  <a href="https://github.com/lucianotonet/laravel-telescope-mcp/actions/workflows/tests.yml">
+    <img src="https://github.com/lucianotonet/laravel-telescope-mcp/actions/workflows/tests.yml/badge.svg" alt="Tests">
+  </a>
+  <a href="https://packagist.org/packages/lucianotonet/laravel-telescope-mcp">
+    <img src="https://img.shields.io/packagist/v/lucianotonet/laravel-telescope-mcp.svg" alt="Latest Version on Packagist">
+  </a>
+  <a href="https://packagist.org/packages/lucianotonet/laravel-telescope-mcp">
+    <img src="https://img.shields.io/packagist/dt/lucianotonet/laravel-telescope-mcp.svg" alt="Total Downloads">
+  </a>
+  <a href="https://packagist.org/packages/lucianotonet/laravel-telescope-mcp">
+    <img src="https://img.shields.io/packagist/l/lucianotonet/laravel-telescope-mcp.svg" alt="License">
+  </a>
+</p>
 
-Give your AI assistant the power to debug with Telescope's data.
+<p align="center">
+    <strong>Laravel Boost Plugin for Telescope</strong>
+    <br/>
+    <i>Give your AI assistant the power to debug with Telescope's data.</i>
+</p>
 
-[![Tests](https://github.com/lucianotonet/laravel-telescope-mcp/actions/workflows/tests.yml/badge.svg)](https://github.com/lucianotonet/laravel-telescope-mcp/actions/workflows/tests.yml)
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/lucianotonet/laravel-telescope-mcp.svg)](https://packagist.org/packages/lucianotonet/laravel-telescope-mcp)
-[![Total Downloads](https://img.shields.io/packagist/dt/lucianotonet/laravel-telescope-mcp.svg)](https://packagist.org/packages/lucianotonet/laravel-telescope-mcp)
-[![Laravel Boost Plugin](https://img.shields.io/badge/Laravel%20Boost-Plugin-orange)](https://laravel-boost.dev)
-[![MCP Protocol](https://img.shields.io/badge/MCP-Protocol-blue)](https://modelcontextprotocol.io)
-[![License](https://img.shields.io/packagist/l/lucianotonet/laravel-telescope-mcp.svg)](https://packagist.org/packages/lucianotonet/laravel-telescope-mcp)
 
 ## Requirements
 
