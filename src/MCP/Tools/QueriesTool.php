@@ -5,10 +5,12 @@ namespace LucianoTonet\TelescopeMcp\MCP\Tools;
 use Laravel\Telescope\EntryType;
 use Laravel\Telescope\Storage\EntryQueryOptions;
 use LucianoTonet\TelescopeMcp\Support\DateFormatter;
-use LucianoTonet\TelescopeMcp\Support\Logger;
+use LucianoTonet\TelescopeMcp\MCP\Tools\Traits\BatchQuerySupport;
 
 class QueriesTool extends AbstractTool
 {
+    use BatchQuerySupport;
+
     /**
      * Retorna o nome curto da ferramenta.
      */
@@ -31,6 +33,10 @@ class QueriesTool extends AbstractTool
                     'id' => [
                         'type' => 'string',
                         'description' => 'ID da query específica para ver detalhes',
+                    ],
+                    'request_id' => [
+                        'type' => 'string',
+                        'description' => 'Filter queries by the request ID they belong to (uses batch_id grouping)'
                     ],
                     'limit' => [
                         'type' => 'integer',
@@ -63,8 +69,22 @@ class QueriesTool extends AbstractTool
                         ],
                     ],
                 ],
-                'required' => ['content'],
+                'required' => ['content']
             ],
+            'examples' => [
+                [
+                    'description' => 'List all queries',
+                    'params' => ['limit' => 10]
+                ],
+                [
+                    'description' => 'List queries for a specific request',
+                    'params' => ['request_id' => 'abc123']
+                ],
+                [
+                    'description' => 'List slow queries for a request',
+                    'params' => ['request_id' => 'abc123', 'slow' => true]
+                ]
+            ]
         ];
     }
 
@@ -81,6 +101,11 @@ class QueriesTool extends AbstractTool
                 return $this->getQueryDetails($params['id']);
             }
 
+            // Check if filtering by request_id
+            if ($this->hasRequestId($params)) {
+                return $this->listQueriesForRequest($params['request_id'], $params);
+            }
+
             return $this->listQueries($params);
         } catch (\Exception $e) {
             Logger::error($this->getName().' execution error', [
@@ -88,7 +113,7 @@ class QueriesTool extends AbstractTool
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return $this->formatError('Error: '.$e->getMessage());
+            return $this->formatError('Error: ' . $e->getMessage());
         }
     }
 
@@ -98,7 +123,7 @@ class QueriesTool extends AbstractTool
     protected function listQueries(array $params): array
     {
         // Definir limite para a consulta
-        $limit = isset($params['limit']) ? min((int) $params['limit'], 100) : 50;
+        $limit = isset($params['limit']) ? min((int)$params['limit'], 100) : 50;
 
         // Configurar opções
         $options = new EntryQueryOptions();
@@ -138,8 +163,8 @@ class QueriesTool extends AbstractTool
 
         // Formatação tabular para facilitar a leitura
         $table = "Database Queries:\n\n";
-        $table .= sprintf("%-5s %-50s %-10s %-15s %-20s\n", 'ID', 'SQL', 'Time (ms)', 'Connection', 'Created At');
-        $table .= str_repeat('-', 105)."\n";
+        $table .= sprintf("%-5s %-50s %-10s %-15s %-20s\n", "ID", "SQL", "Time (ms)", "Connection", "Created At");
+        $table .= str_repeat("-", 105) . "\n";
 
         foreach ($queries as $query) {
             // Truncar SQL longa
@@ -159,9 +184,90 @@ class QueriesTool extends AbstractTool
             );
         }
 
-        $combinedText = $table."\n\n--- JSON Data ---\n".json_encode([
+        $combinedText = $table . "\n\n--- JSON Data ---\n" . json_encode([
             'total' => count($queries),
             'queries' => $queries,
+        ], JSON_PRETTY_PRINT);
+
+        return $this->formatResponse($combinedText);
+    }
+
+    /**
+     * Lista queries para um request específico usando batch_id
+     */
+    protected function listQueriesForRequest(string $requestId, array $params): array
+    {
+        Logger::info($this->getName() . ' listing queries for request', ['request_id' => $requestId]);
+
+        // Get the batch_id for this request
+        $batchId = $this->getBatchIdForRequest($requestId);
+
+        if (!$batchId) {
+            return $this->formatError("Request not found or has no batch ID: {$requestId}");
+        }
+
+        $limit = isset($params['limit']) ? min((int)$params['limit'], 100) : 50;
+
+        // Get queries for this batch
+        $entries = $this->getEntriesByBatchId($batchId, 'query', $limit);
+
+        if (empty($entries)) {
+            return $this->formatResponse("No queries found for request: {$requestId}");
+        }
+
+        $queries = [];
+
+        foreach ($entries as $entry) {
+            $content = is_array($entry->content) ? $entry->content : [];
+
+            $createdAt = isset($entry->createdAt) ? DateFormatter::format($entry->createdAt) : 'Unknown';
+
+            $duration = $content['duration'] ?? $content['time'] ?? 0;
+            $slow = $duration > 100;
+
+            // Skip if we're only looking for slow queries and this one isn't slow
+            if (($params['slow'] ?? false) && !$slow) {
+                continue;
+            }
+
+            $queries[] = [
+                'id' => $entry->id,
+                'sql' => $content['sql'] ?? 'Unknown',
+                'duration' => $duration,
+                'connection' => $content['connection'] ?? 'default',
+                'created_at' => $createdAt
+            ];
+        }
+
+        // Formatação tabular com contexto do request
+        $table = "Queries for Request: {$requestId}\n";
+        $table .= "Batch ID: {$batchId}\n";
+        $table .= "Total: " . count($queries) . " queries\n\n";
+        $table .= sprintf("%-5s %-50s %-10s %-15s %-20s\n", "ID", "SQL", "Time (ms)", "Connection", "Created At");
+        $table .= str_repeat("-", 105) . "\n";
+
+        foreach ($queries as $query) {
+            $sql = $query['sql'];
+            $sql = $this->safeString($sql);
+            if (strlen($sql) > 50) {
+                $sql = substr($sql, 0, 47) . "...";
+            }
+
+            $table .= sprintf(
+                "%-5s %-50s %-10s %-15s %-20s\n",
+                $query['id'],
+                $sql,
+                number_format($query['duration'], 2),
+                $query['connection'],
+                $query['created_at']
+            );
+        }
+
+        $combinedText = $table . "\n\n--- JSON Data ---\n" . json_encode([
+            'request_id' => $requestId,
+            'batch_id' => $batchId,
+            'total' => count($queries),
+            'queries' => $queries
         ], JSON_PRETTY_PRINT);
 
         return $this->formatResponse($combinedText);
@@ -172,7 +278,7 @@ class QueriesTool extends AbstractTool
      */
     protected function getQueryDetails(string $id): array
     {
-        Logger::info($this->getName().' getting details', ['id' => $id]);
+        Logger::info($this->getName() . ' getting details', ['id' => $id]);
 
         // Buscar a entrada específica
         $entry = $this->getEntryDetails(EntryType::QUERY, $id);
@@ -194,14 +300,14 @@ class QueriesTool extends AbstractTool
         $output .= "Created At: {$createdAt}\n\n";
 
         // SQL completo
-        $output .= "SQL:\n".($content['sql'] ?? 'Unknown')."\n\n";
+        $output .= "SQL:\n" . ($content['sql'] ?? 'Unknown') . "\n\n";
 
         // Bindings se disponíveis
         if (isset($content['bindings']) && !empty($content['bindings'])) {
             $output .= "Bindings:\n".json_encode($content['bindings'], JSON_PRETTY_PRINT)."\n";
         }
 
-        $combinedText = $output."\n\n--- JSON Data ---\n".json_encode([
+        $combinedText = $output . "\n\n--- JSON Data ---\n" . json_encode([
             'id' => $entry->id,
             'connection' => $content['connection'] ?? 'default',
             'duration' => $content['time'] ?? 0,

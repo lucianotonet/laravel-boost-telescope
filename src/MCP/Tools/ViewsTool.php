@@ -5,31 +5,19 @@ namespace LucianoTonet\TelescopeMcp\MCP\Tools;
 use Laravel\Telescope\Contracts\EntriesRepository;
 use Laravel\Telescope\EntryType;
 use Laravel\Telescope\Storage\EntryQueryOptions;
-use LucianoTonet\TelescopeMcp\Support\DateFormatter;
-use LucianoTonet\TelescopeMcp\Support\Logger;
+use LucianoTonet\TelescopeMcp\MCP\Tools\Traits\BatchQuerySupport;
 
 /**
  * Tool for interacting with view renderings recorded by Telescope.
  */
 class ViewsTool extends AbstractTool
 {
-    /**
-     * @var EntriesRepository
-     */
-    protected $entriesRepository;
+    use BatchQuerySupport;
 
     /**
-     * ViewsTool constructor.
+     * Returns the tool's short name
      *
-     * @param EntriesRepository $entriesRepository The Telescope entries repository
-     */
-    public function __construct(EntriesRepository $entriesRepository)
-    {
-        $this->entriesRepository = $entriesRepository;
-    }
-
-    /**
-     * Returns the tool's short name.
+     * @return string
      */
     public function getShortName(): string
     {
@@ -37,7 +25,9 @@ class ViewsTool extends AbstractTool
     }
 
     /**
-     * Returns the tool's schema.
+     * Returns the tool's schema
+     *
+     * @return array
      */
     public function getSchema(): array
     {
@@ -50,6 +40,10 @@ class ViewsTool extends AbstractTool
                     'id' => [
                         'type' => 'string',
                         'description' => 'ID of the specific view rendering to view details',
+                    ],
+                    'request_id' => [
+                        'type' => 'string',
+                        'description' => 'Filter views by the request ID they belong to (uses batch_id grouping)'
                     ],
                     'limit' => [
                         'type' => 'integer',
@@ -83,14 +77,18 @@ class ViewsTool extends AbstractTool
                 ],
                 [
                     'description' => 'Get details of a specific view rendering',
-                    'params' => ['id' => '12345'],
+                    'params' => ['id' => '12345']
                 ],
-            ],
+                [
+                    'description' => 'List views for a specific request',
+                    'params' => ['request_id' => 'abc123']
+                ]
+            ]
         ];
     }
 
     /**
-     * Executes the tool with the given parameters.
+     * Executes the tool with the given parameters
      *
      * @param array $params Tool parameters
      *
@@ -106,6 +104,11 @@ class ViewsTool extends AbstractTool
                 return $this->getViewDetails($params['id']);
             }
 
+            // Check if filtering by request_id
+            if ($this->hasRequestId($params)) {
+                return $this->listViewsForRequest($params['request_id'], $params);
+            }
+
             return $this->listViews($params);
         } catch (\Exception $e) {
             Logger::error($this->getName().' execution error', [
@@ -118,7 +121,7 @@ class ViewsTool extends AbstractTool
     }
 
     /**
-     * Lists view renderings recorded by Telescope.
+     * Lists view renderings recorded by Telescope
      *
      * @param array $params Query parameters
      *
@@ -158,14 +161,9 @@ class ViewsTool extends AbstractTool
 
         // Tabular formatting for better readability
         $table = "View Renderings:\n\n";
-        $table .= sprintf(
-            "%-5s %-30s %-50s %-20s\n",
-            'ID',
-            'Name',
-            'Path',
-            'Created At'
-        );
-        $table .= str_repeat('-', 120)."\n";
+        $table .= sprintf("%-5s %-30s %-50s %-20s\n",
+            "ID", "Name", "Path", "Created At");
+        $table .= str_repeat("-", 120) . "\n";
 
         foreach ($views as $view) {
             // Truncate name and path if too long
@@ -190,11 +188,96 @@ class ViewsTool extends AbstractTool
             );
         }
 
-        return $this->formatResponse($table);
+        $combinedText = $table . "\n\n--- JSON Data ---\n" . json_encode([
+            'total' => count($views),
+            'views' => $views
+        ], JSON_PRETTY_PRINT);
+
+        return $this->formatResponse($combinedText);
     }
 
     /**
-     * Gets details of a specific view rendering.
+     * Lists views for a specific request using batch_id
+     *
+     * @param string $requestId The request ID
+     * @param array $params Tool parameters
+     * @return array Response in MCP format
+     */
+    protected function listViewsForRequest(string $requestId, array $params): array
+    {
+        Logger::info($this->getName() . ' listing views for request', ['request_id' => $requestId]);
+
+        // Get the batch_id for this request
+        $batchId = $this->getBatchIdForRequest($requestId);
+
+        if (!$batchId) {
+            return $this->formatError("Request not found or has no batch ID: {$requestId}");
+        }
+
+        $limit = isset($params['limit']) ? min((int)$params['limit'], 100) : 50;
+
+        // Get views for this batch
+        $entries = $this->getEntriesByBatchId($batchId, 'view', $limit);
+
+        if (empty($entries)) {
+            return $this->formatResponse("No views found for request: {$requestId}");
+        }
+
+        $views = [];
+
+        foreach ($entries as $entry) {
+            $content = is_array($entry->content) ? $entry->content : [];
+            $createdAt = isset($entry->createdAt) ? DateFormatter::format($entry->createdAt) : 'Unknown';
+
+            $views[] = [
+                'id' => $entry->id,
+                'name' => $content['name'] ?? 'Unknown',
+                'path' => $content['path'] ?? 'Unknown',
+                'created_at' => $createdAt
+            ];
+        }
+
+        // Tabular formatting with request context
+        $table = "Views for Request: {$requestId}\n";
+        $table .= "Batch ID: {$batchId}\n";
+        $table .= "Total: " . count($views) . " views\n\n";
+        $table .= sprintf("%-5s %-30s %-50s %-20s\n", "ID", "Name", "Path", "Created At");
+        $table .= str_repeat("-", 120) . "\n";
+
+        foreach ($views as $view) {
+            $name = $view['name'];
+            $name = $this->safeString($name);
+            if (strlen($name) > 30) {
+                $name = substr($name, 0, 27) . "...";
+            }
+
+            $path = $view['path'];
+            $path = $this->safeString($path);
+            if (strlen($path) > 50) {
+                $path = substr($path, 0, 47) . "...";
+            }
+
+            $table .= sprintf(
+                "%-5s %-30s %-50s %-20s\n",
+                $view['id'],
+                $name,
+                $path,
+                $view['created_at']
+            );
+        }
+
+        $combinedText = $table . "\n\n--- JSON Data ---\n" . json_encode([
+            'request_id' => $requestId,
+            'batch_id' => $batchId,
+            'total' => count($views),
+            'views' => $views
+        ], JSON_PRETTY_PRINT);
+
+        return $this->formatResponse($combinedText);
+    }
+
+    /**
+     * Gets details of a specific view rendering
      *
      * @param string $id The view rendering ID
      *
@@ -232,6 +315,14 @@ class ViewsTool extends AbstractTool
             $output .= "\n";
         }
 
-        return $this->formatResponse($output);
+        $combinedText = $output . "\n\n--- JSON Data ---\n" . json_encode([
+            'id' => $entry->id,
+            'name' => $content['name'] ?? 'Unknown',
+            'path' => $content['path'] ?? 'Unknown',
+            'created_at' => $createdAt,
+            'data' => $content['data'] ?? []
+        ], JSON_PRETTY_PRINT);
+
+        return $this->formatResponse($combinedText);
     }
 }
