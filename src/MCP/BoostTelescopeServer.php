@@ -1,32 +1,32 @@
 <?php
 
-namespace LucianoTonet\TelescopeMcp\MCP;
+namespace LucianoTonet\LaravelBoostTelescope\MCP;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Laravel\Telescope\Contracts\EntriesRepository;
-use LucianoTonet\TelescopeMcp\MCP\Tools\BatchesTool;
-use LucianoTonet\TelescopeMcp\MCP\Tools\CacheTool;
-use LucianoTonet\TelescopeMcp\MCP\Tools\CommandsTool;
-use LucianoTonet\TelescopeMcp\MCP\Tools\DumpsTool;
-use LucianoTonet\TelescopeMcp\MCP\Tools\EventsTool;
-use LucianoTonet\TelescopeMcp\MCP\Tools\ExceptionsTool;
-use LucianoTonet\TelescopeMcp\MCP\Tools\GatesTool;
-use LucianoTonet\TelescopeMcp\MCP\Tools\HttpClientTool;
-use LucianoTonet\TelescopeMcp\MCP\Tools\JobsTool;
-use LucianoTonet\TelescopeMcp\MCP\Tools\LogsTool;
-use LucianoTonet\TelescopeMcp\MCP\Tools\MailTool;
-use LucianoTonet\TelescopeMcp\MCP\Tools\ModelsTool;
-use LucianoTonet\TelescopeMcp\MCP\Tools\NotificationsTool;
-use LucianoTonet\TelescopeMcp\MCP\Tools\PruneTool;
-use LucianoTonet\TelescopeMcp\MCP\Tools\QueriesTool;
-use LucianoTonet\TelescopeMcp\MCP\Tools\RedisTool;
-use LucianoTonet\TelescopeMcp\MCP\Tools\RequestsTool;
-use LucianoTonet\TelescopeMcp\MCP\Tools\ScheduleTool;
-use LucianoTonet\TelescopeMcp\MCP\Tools\ViewsTool;
-use LucianoTonet\TelescopeMcp\Support\Logger;
+use LucianoTonet\LaravelBoostTelescope\MCP\Tools\BatchesTool;
+use LucianoTonet\LaravelBoostTelescope\MCP\Tools\CacheTool;
+use LucianoTonet\LaravelBoostTelescope\MCP\Tools\CommandsTool;
+use LucianoTonet\LaravelBoostTelescope\MCP\Tools\DumpsTool;
+use LucianoTonet\LaravelBoostTelescope\MCP\Tools\EventsTool;
+use LucianoTonet\LaravelBoostTelescope\MCP\Tools\ExceptionsTool;
+use LucianoTonet\LaravelBoostTelescope\MCP\Tools\GatesTool;
+use LucianoTonet\LaravelBoostTelescope\MCP\Tools\HttpClientTool;
+use LucianoTonet\LaravelBoostTelescope\MCP\Tools\JobsTool;
+use LucianoTonet\LaravelBoostTelescope\MCP\Tools\LogsTool;
+use LucianoTonet\LaravelBoostTelescope\MCP\Tools\MailTool;
+use LucianoTonet\LaravelBoostTelescope\MCP\Tools\ModelsTool;
+use LucianoTonet\LaravelBoostTelescope\MCP\Tools\NotificationsTool;
+use LucianoTonet\LaravelBoostTelescope\MCP\Tools\PruneTool;
+use LucianoTonet\LaravelBoostTelescope\MCP\Tools\QueriesTool;
+use LucianoTonet\LaravelBoostTelescope\MCP\Tools\RedisTool;
+use LucianoTonet\LaravelBoostTelescope\MCP\Tools\RequestsTool;
+use LucianoTonet\LaravelBoostTelescope\MCP\Tools\ScheduleTool;
+use LucianoTonet\LaravelBoostTelescope\MCP\Tools\ViewsTool;
+use LucianoTonet\LaravelBoostTelescope\Support\Logger;
 
-class TelescopeMcpServer
+class BoostTelescopeServer
 {
     protected $entriesRepository;
     protected $tools;
@@ -213,9 +213,9 @@ class TelescopeMcpServer
         }
 
         $this->manifest = [
-            'name' => 'Laravel Telescope MCP',
+            'name' => 'Laravel Boost Telescope',
             'version' => '1.0.0',
-            'description' => 'Laravel Telescope Model Context Provider',
+            'description' => 'Laravel Telescope tools for Laravel Boost',
             'tools' => $toolsFormatted,
         ];
     }

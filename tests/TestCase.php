@@ -3,7 +3,7 @@
 namespace Tests;
 
 use Laravel\Telescope\TelescopeServiceProvider;
-use LucianoTonet\TelescopeMcp\TelescopeMcpServiceProvider;
+use LucianoTonet\LaravelBoostTelescope\BoostTelescopeServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
@@ -12,7 +12,7 @@ abstract class TestCase extends BaseTestCase
     {
         return [
             TelescopeServiceProvider::class,
-            TelescopeMcpServiceProvider::class,
+            BoostTelescopeServiceProvider::class,
         ];
     }
 
@@ -26,8 +26,8 @@ abstract class TestCase extends BaseTestCase
             'prefix' => '',
         ]);
 
-        // Configure Telescope MCP
-        $app['config']->set('telescope-mcp', [
+        // Configure Laravel Boost Telescope
+        $app['config']->set('laravel-boost-telescope', [
             'enabled' => true,
             'logging' => [
                 'enabled' => true,

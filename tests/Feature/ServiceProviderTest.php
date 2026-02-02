@@ -1,34 +1,34 @@
 <?php
 
-use LucianoTonet\TelescopeMcp\BoostExtension\Tools\TelescopeExceptionsTool;
-use LucianoTonet\TelescopeMcp\BoostExtension\Tools\TelescopeHttpClientTool;
-use LucianoTonet\TelescopeMcp\BoostExtension\Tools\TelescopeRequestsTool;
-use LucianoTonet\TelescopeMcp\MCP\TelescopeMcpServer;
-use LucianoTonet\TelescopeMcp\TelescopeBoostServiceProvider;
-use LucianoTonet\TelescopeMcp\TelescopeMcpServiceProvider;
+use LucianoTonet\LaravelBoostTelescope\BoostExtension\Tools\TelescopeExceptionsTool;
+use LucianoTonet\LaravelBoostTelescope\BoostExtension\Tools\TelescopeHttpClientTool;
+use LucianoTonet\LaravelBoostTelescope\BoostExtension\Tools\TelescopeRequestsTool;
+use LucianoTonet\LaravelBoostTelescope\BoostTelescopeServiceProvider;
+use LucianoTonet\LaravelBoostTelescope\BoostTelescopeSkillServiceProvider;
+use LucianoTonet\LaravelBoostTelescope\MCP\BoostTelescopeServer;
 
-test('telescope mcp service provider is registered', function () {
-    expect(app()->getProvider(TelescopeMcpServiceProvider::class))
-        ->toBeInstanceOf(TelescopeMcpServiceProvider::class)
+test('boost telescope service provider is registered', function () {
+    expect(app()->getProvider(BoostTelescopeServiceProvider::class))
+        ->toBeInstanceOf(BoostTelescopeServiceProvider::class)
     ;
 });
 
-test('telescope boost service provider is registered', function () {
-    expect(app()->getProvider(TelescopeBoostServiceProvider::class))
-        ->toBeInstanceOf(TelescopeBoostServiceProvider::class)
+test('boost telescope skill service provider is registered', function () {
+    expect(app()->getProvider(BoostTelescopeSkillServiceProvider::class))
+        ->toBeInstanceOf(BoostTelescopeSkillServiceProvider::class)
     ;
 });
 
-test('telescope mcp server can be resolved from container', function () {
-    $server = app(TelescopeMcpServer::class);
+test('boost telescope server can be resolved from container', function () {
+    $server = app(BoostTelescopeServer::class);
 
-    expect($server)->toBeInstanceOf(TelescopeMcpServer::class);
+    expect($server)->toBeInstanceOf(BoostTelescopeServer::class);
 });
 
 test('config is loaded correctly', function () {
-    expect(config('telescope-mcp.enabled'))->toBeTrue()
-        ->and(config('telescope-mcp.logging.enabled'))->toBeTrue()
-        ->and(config('telescope-mcp.logging.channel'))->toBe('stack')
+    expect(config('laravel-boost-telescope.enabled'))->toBeTrue()
+        ->and(config('laravel-boost-telescope.logging.enabled'))->toBeTrue()
+        ->and(config('laravel-boost-telescope.logging.channel'))->toBe('stack')
     ;
 });
 

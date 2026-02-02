@@ -1,9 +1,9 @@
 <?php
 
-namespace LucianoTonet\TelescopeMcp\BoostExtension\Tools;
+namespace LucianoTonet\LaravelBoostTelescope\BoostExtension\Tools;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use LucianoTonet\TelescopeMcp\BoostExtension\TelescopeBoostTool;
+use LucianoTonet\LaravelBoostTelescope\BoostExtension\TelescopeBoostTool;
 
 class TelescopeCommandsTool extends TelescopeBoostTool
 {

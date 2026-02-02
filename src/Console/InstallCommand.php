@@ -1,23 +1,23 @@
 <?php
 
-namespace LucianoTonet\TelescopeMcp\Console;
+namespace LucianoTonet\LaravelBoostTelescope\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 
 class InstallCommand extends Command
 {
-    protected $signature = 'telescope-mcp:install';
+    protected $signature = 'laravel-boost-telescope:install';
 
-    protected $description = 'Install the Telescope MCP package and register with Laravel Boost';
+    protected $description = 'Install Laravel Boost Telescope and register with Laravel Boost';
 
     public function handle(): int
     {
-        $this->info('Installing Telescope MCP...');
+        $this->info('Installing Laravel Boost Telescope...');
 
         // Publish configuration
         $this->call('vendor:publish', [
-            '--tag' => 'telescope-mcp-config',
+            '--tag' => 'laravel-boost-telescope-config',
         ]);
 
         // Register with Boost if configured
@@ -27,7 +27,7 @@ class InstallCommand extends Command
             $this->warn('Laravel Boost configuration (boost.json) not found. Skipping Boost registration.');
         }
 
-        $this->info('Telescope MCP installed successfully.');
+        $this->info('Laravel Boost Telescope installed successfully.');
 
         return self::SUCCESS;
     }
@@ -45,7 +45,7 @@ class InstallCommand extends Command
                 return;
             }
 
-            $packageName = 'lucianotonet/laravel-telescope-mcp';
+            $packageName = 'lucianotonet/laravel-boost-telescope';
 
             if (!isset($config['packages'])) {
                 $config['packages'] = [];

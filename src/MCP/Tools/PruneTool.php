@@ -1,9 +1,9 @@
 <?php
 
-namespace LucianoTonet\TelescopeMcp\MCP\Tools;
+namespace LucianoTonet\LaravelBoostTelescope\MCP\Tools;
 
 use Illuminate\Support\Facades\Artisan;
-use LucianoTonet\TelescopeMcp\Support\Logger;
+use LucianoTonet\LaravelBoostTelescope\Support\Logger;
 
 /**
  * Tool for pruning old Telescope entries.

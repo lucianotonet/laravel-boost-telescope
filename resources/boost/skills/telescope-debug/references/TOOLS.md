@@ -1,6 +1,6 @@
-# Telescope MCP Tools Reference
+# Laravel Boost Telescope Tools Reference
 
-Complete technical reference for all 19 Telescope MCP tools.
+Complete technical reference for all 19 Laravel Boost Telescope tools.
 
 ## Tool Index
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace LucianoTonet\TelescopeMcp\Support;
+namespace LucianoTonet\LaravelBoostTelescope\Support;
 
 class DateFormatter
 {

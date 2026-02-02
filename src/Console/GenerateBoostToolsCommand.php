@@ -1,14 +1,14 @@
 <?php
 
-namespace LucianoTonet\TelescopeMcp\Console;
+namespace LucianoTonet\LaravelBoostTelescope\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
 class GenerateBoostToolsCommand extends Command
 {
-    protected $signature = 'telescope-mcp:generate-boost-tools';
-    protected $description = 'Generate Boost tool wrappers for all Telescope MCP tools';
+    protected $signature = 'laravel-boost-telescope:generate-boost-tools';
+    protected $description = 'Generate Boost tool wrappers for all Telescope tools';
 
     protected array $tools = [
         'Requests',
@@ -36,7 +36,7 @@ class GenerateBoostToolsCommand extends Command
     {
         $this->info('Generating Boost tool wrappers...');
 
-        $basePath = base_path('vendor/lucianotonet/laravel-telescope-mcp/src/BoostExtension/Tools');
+        $basePath = base_path('vendor/lucianotonet/laravel-boost-telescope/src/BoostExtension/Tools');
 
         if (!is_dir($basePath) && !mkdir($basePath, 0o755, true)) {
             $this->error("Failed to create directory: {$basePath}");
@@ -66,7 +66,7 @@ class GenerateBoostToolsCommand extends Command
         }
 
         $this->info("\nAll Boost tool wrappers generated successfully!");
-        $this->warn("\nDon't forget to register them in TelescopeBoostServiceProvider::registerBoostTools()");
+        $this->warn("\nDon't forget to register them in BoostTelescopeSkillServiceProvider::registerBoostTools()");
 
         return self::SUCCESS;
     }
@@ -79,10 +79,10 @@ class GenerateBoostToolsCommand extends Command
         return <<<PHP
             <?php
 
-            namespace LucianoTonet\\TelescopeMcp\\BoostExtension\\Tools;
+            namespace LucianoTonet\\LaravelBoostTelescope\\BoostExtension\\Tools;
 
             use Illuminate\\Contracts\\JsonSchema\\JsonSchema;
-            use LucianoTonet\\TelescopeMcp\\BoostExtension\\TelescopeBoostTool;
+            use LucianoTonet\\LaravelBoostTelescope\\BoostExtension\\TelescopeBoostTool;
 
             class {$className} extends TelescopeBoostTool
             {

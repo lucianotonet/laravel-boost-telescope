@@ -1,9 +1,9 @@
 <?php
 
-namespace LucianoTonet\TelescopeMcp\MCP\Tools;
+namespace LucianoTonet\LaravelBoostTelescope\MCP\Tools;
 
 use Laravel\Telescope\Contracts\EntriesRepository;
-use LucianoTonet\TelescopeMcp\Support\Logger;
+use LucianoTonet\LaravelBoostTelescope\Support\Logger;
 
 /**
  * Abstract base class for all MCP tools.

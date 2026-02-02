@@ -7,14 +7,14 @@ use Illuminate\Support\Facades\File;
 it('generates boost tools files correctly', function () {
     // The command uses base_path('vendor/...')
     // In testbench, base_path() is the temp app root.
-    $targetPath = base_path('vendor/lucianotonet/laravel-telescope-mcp/src/BoostExtension/Tools');
+    $targetPath = base_path('vendor/lucianotonet/laravel-boost-telescope/src/BoostExtension/Tools');
 
     // Ensure clean state
     if (File::exists($targetPath)) {
         File::deleteDirectory($targetPath);
     }
 
-    $this->artisan('telescope-mcp:generate-boost-tools')
+    $this->artisan('laravel-boost-telescope:generate-boost-tools')
         ->assertExitCode(0)
     ;
 

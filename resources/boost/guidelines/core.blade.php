@@ -1,6 +1,6 @@
-# Telescope MCP Debugging Tools
+# Laravel Boost Telescope Debugging Tools
 
-This Laravel application has **Laravel Telescope MCP** installed, providing AI-powered access to structured debugging data through 19 specialized tools.
+This Laravel application has **Laravel Boost Telescope** installed, providing AI-powered access to structured debugging data through 19 specialized tools.
 
 ## Quick Reference
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace LucianoTonet\TelescopeMcp\MCP\Tools\Traits;
+namespace LucianoTonet\LaravelBoostTelescope\MCP\Tools\Traits;
 
 use Illuminate\Support\Facades\DB;
-use LucianoTonet\TelescopeMcp\Support\Logger;
+use LucianoTonet\LaravelBoostTelescope\Support\Logger;
 
 /**
  * Trait providing batch query support for tools.

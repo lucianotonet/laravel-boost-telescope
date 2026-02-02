@@ -1,6 +1,6 @@
 <?php
 
-namespace LucianoTonet\TelescopeMcp\Support;
+namespace LucianoTonet\LaravelBoostTelescope\Support;
 
 use Illuminate\Support\Facades\Log;
 
@@ -24,7 +24,7 @@ class Logger
 
     public function log($level, $message, array $context = [])
     {
-        if (!config('telescope-mcp.logging.enabled', true)) {
+        if (!config('laravel-boost-telescope.logging.enabled', true)) {
             return;
         }
 

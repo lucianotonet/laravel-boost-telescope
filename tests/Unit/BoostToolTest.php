@@ -5,8 +5,8 @@ namespace Tests\Unit;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
-use LucianoTonet\TelescopeMcp\BoostExtension\TelescopeBoostTool;
-use LucianoTonet\TelescopeMcp\MCP\TelescopeMcpServer;
+use LucianoTonet\LaravelBoostTelescope\BoostExtension\TelescopeBoostTool;
+use LucianoTonet\LaravelBoostTelescope\MCP\BoostTelescopeServer;
 use Tests\TestCase;
 
 uses(TestCase::class);
@@ -51,7 +51,7 @@ class TelescopeExceptionsToolTestStub extends TelescopeBoostTool
 
 test('getToolNameFromClass converts to kebab-case', function () {
     // Mock server to avoid constructor error
-    $this->mock(TelescopeMcpServer::class);
+    $this->mock(BoostTelescopeServer::class);
 
     $httpTool = new TelescopeHttpClientToolTestStub();
     expect($httpTool->getToolNamePublic())->toBe('http-client-test-stub');
@@ -61,7 +61,7 @@ test('getToolNameFromClass converts to kebab-case', function () {
 });
 
 test('handle accepts array and returns Response', function () {
-    $server = $this->mock(TelescopeMcpServer::class);
+    $server = $this->mock(BoostTelescopeServer::class);
     $server->shouldReceive('executeTool')
         ->with('mocked-tool', ['foo' => 'bar'])
         ->once()
@@ -91,7 +91,7 @@ test('handle accepts array and returns Response', function () {
 });
 
 test('handle accepts Request and returns Response', function () {
-    $server = $this->mock(TelescopeMcpServer::class);
+    $server = $this->mock(BoostTelescopeServer::class);
     $server->shouldReceive('executeTool')
         ->with('mocked-tool', ['foo' => 'baz'])
         ->once()

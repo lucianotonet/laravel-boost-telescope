@@ -1,18 +1,18 @@
 <?php
 
-namespace LucianoTonet\TelescopeMcp;
+namespace LucianoTonet\LaravelBoostTelescope;
 
 use Illuminate\Support\ServiceProvider;
 use Laravel\Boost\Boost;
-use LucianoTonet\TelescopeMcp\Support\Logger;
+use LucianoTonet\LaravelBoostTelescope\Support\Logger;
 
 /**
- * Service Provider for Laravel Boost integration.
+ * Service Provider for Laravel Boost skill integration.
  *
- * This provider handles the registration of Telescope MCP as a Boost Package Skill,
+ * This provider handles the registration of Laravel Boost Telescope as a Boost Package Skill,
  * enabling automatic discovery of guidelines, skills, and tools.
  */
-class TelescopeBoostServiceProvider extends ServiceProvider
+class BoostTelescopeSkillServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap any application services.
@@ -34,8 +34,8 @@ class TelescopeBoostServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // This provider is focused on Boost integration
-        // Core MCP functionality is in TelescopeMcpServiceProvider
+        // This provider is focused on Boost skill integration
+        // Core functionality is in BoostTelescopeServiceProvider
     }
 
     /**
@@ -59,13 +59,13 @@ class TelescopeBoostServiceProvider extends ServiceProvider
         // Register views from the boost resources path so Laravel can find them
         // This enables Boost to discover our guidelines and skills
         if (is_dir($boostResourcesPath)) {
-            $this->loadViewsFrom($boostResourcesPath.'/guidelines', 'telescope-mcp-boost');
+            $this->loadViewsFrom($boostResourcesPath.'/guidelines', 'laravel-boost-telescope');
         }
 
         // Publish Boost resources when running in console
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                $boostResourcesPath.'/guidelines' => resource_path('boost/guidelines/telescope-mcp'),
+                $boostResourcesPath.'/guidelines' => resource_path('boost/guidelines/laravel-boost-telescope'),
                 $boostResourcesPath.'/skills' => resource_path('boost/skills'),
             ], 'boost');
         }

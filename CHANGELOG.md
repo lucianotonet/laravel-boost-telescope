@@ -1,67 +1,42 @@
 # Changelog
 
-All notable changes to `laravel-telescope-mcp` will be documented in this file.
+All notable changes to `laravel-boost-telescope` will be documented in this file.
 
 ## [Unreleased]
 
-### Changed
-- Updated PHP requirement to 8.2+
-- Updated Laravel requirement to ^11.0|^12.0
-- Updated Laravel Telescope requirement to ^5.0|^6.0
-- Updated Laravel Boost requirement to ^2.0
-
-## [1.0.0-beta.1] - 2026-01-30
+## [1.0.0] - 2026-02-02
 
 ### Added
-- Native integration with Laravel Boost via `laravel/boost` package
-- 20 Boost tools that register directly in the MCP server
+- Initial release as Laravel Boost plugin for Telescope integration
+- 20 specialized debugging tools accessible via Laravel Boost MCP server
+- `BoostTelescopeServiceProvider` for automatic tool discovery and registration
+- `BoostTelescopeSkillServiceProvider` for Boost skills integration
 - `TelescopeBoostTool` base class for tool wrappers
-- `GenerateBoostToolsCommand` for automatic tool generation
-- Automatic tool discovery and registration via `TelescopeBoostServiceProvider`
-- Skills and Guidelines for Laravel Boost integration
+- Skills and Guidelines for AI-assisted debugging
 
-### Fixed
-- Fixed integration with Laravel Boost MCP server v0
-- `TelescopeBoostTool::handle()` now correctly accepts `Laravel\Mcp\Request` objects
-- `TelescopeBoostTool::handle()` now correctly returns `Laravel\Mcp\Response` objects
-- Removed redundant abstract methods that caused fatal errors
+### Tools
+- `telescope_exceptions` - Exception tracking with stack traces
+- `telescope_queries` - Database query analysis with slow query detection
+- `telescope_requests` - HTTP request/response logging with related entries
+- `telescope_logs` - Application log entries
+- `telescope_jobs` - Queue job execution monitoring
+- `telescope_batches` - Batch job processing
+- `telescope_cache` - Cache operations analysis
+- `telescope_redis` - Redis operations monitoring
+- `telescope_models` - Eloquent model operations
+- `telescope_mail` - Email tracking
+- `telescope_notifications` - Notification dispatching
+- `telescope_commands` - Artisan command execution
+- `telescope_schedule` - Scheduled task monitoring
+- `telescope_events` - Event dispatching
+- `telescope_gates` - Authorization gate checks
+- `telescope_views` - View rendering
+- `telescope_dumps` - Debug dumps (dump/dd)
+- `telescope_http_client` - Outgoing HTTP requests
+- `telescope_prune` - Telescope entry cleanup
 
-### Changed
-- **BREAKING**: Removed standalone HTTP/MCP mode
-- Simplified configuration (removed `TELESCOPE_MCP_STANDALONE` and `TELESCOPE_MCP_PATH`)
-- Updated documentation to reflect Boost-only integration
-- Improved performance by eliminating tinker overhead
-
-### Removed
-- **BREAKING**: Standalone HTTP routes and controllers
-- **BREAKING**: `TELESCOPE_MCP_STANDALONE` configuration option
-- **BREAKING**: `TELESCOPE_MCP_PATH` configuration option
-
-## [1.0.0] - 2026-01-30
-
-### Added
-- Initial release with 20 specialized debugging tools
-- Skills and Guidelines for Laravel Boost integration
-- Comprehensive documentation
-- Test suite with Pest
-
-### Features
-- Exception tracking with stack traces
-- Database query analysis with slow query detection
-- HTTP request/response logging
-- Application log entries
-- Queue job execution monitoring
-- Batch job processing
-- Cache operations analysis
-- Redis operations monitoring
-- Eloquent model operations
-- Email tracking
-- Notification dispatching
-- Artisan command execution
-- Scheduled task monitoring
-- Event dispatching
-- Authorization gate checks
-- View rendering
-- Debug dumps (dump/dd)
-- Outgoing HTTP requests
-- Telescope entry pruning
+### Requirements
+- PHP 8.2+
+- Laravel 11.x or 12.x
+- Laravel Telescope 5.0+
+- Laravel Boost 2.0+

@@ -1,17 +1,14 @@
-<p align="center"><img width="474" height="47" src="./art/logo.svg" alt="Logo Laravel Telescope MCP"></p>
+# Laravel Boost Telescope
 
-<p align="center">
-  <a href="https://github.com/lucianotonet/laravel-telescope-mcp/actions/workflows/tests.yml"><img src="https://github.com/lucianotonet/laravel-telescope-mcp/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
-  <a href="https://packagist.org/packages/lucianotonet/laravel-telescope-mcp"><img src="https://img.shields.io/packagist/v/lucianotonet/laravel-telescope-mcp.svg" alt="Latest Version on Packagist"></a>
-  <a href="https://packagist.org/packages/lucianotonet/laravel-telescope-mcp"><img src="https://img.shields.io/packagist/dt/lucianotonet/laravel-telescope-mcp.svg" alt="Total Downloads"></a>
-  <a href="https://packagist.org/packages/lucianotonet/laravel-telescope-mcp"><img src="https://img.shields.io/packagist/l/lucianotonet/laravel-telescope-mcp.svg" alt="License"></a>
-</p>
+<a href="https://github.com/lucianotonet/laravel-boost-telescope/actions/workflows/tests.yml"><img src="https://github.com/lucianotonet/laravel-boost-telescope/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
+<a href="https://packagist.org/packages/lucianotonet/laravel-boost-telescope"><img src="https://img.shields.io/packagist/v/lucianotonet/laravel-boost-telescope.svg" alt="Latest Version on Packagist"></a>
+<a href="https://packagist.org/packages/lucianotonet/laravel-boost-telescope"><img src="https://img.shields.io/packagist/dt/lucianotonet/laravel-boost-telescope.svg" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/lucianotonet/laravel-boost-telescope"><img src="https://img.shields.io/packagist/l/lucianotonet/laravel-boost-telescope.svg" alt="License"></a>
 
-<p align="center">
-    <strong>Laravel Boost Plugin for Telescope</strong>
-    <br/>
-    <i>Give your AI assistant the power to debug with Telescope's data.</i>
-</p>
+
+**Laravel Boost Plugin for Telescope**
+
+*Give your AI assistant the power to debug with Telescope's data.*
 
 
 ## Requirements
@@ -24,7 +21,7 @@
 ## Installation
 
 ```bash
-composer require lucianotonet/laravel-telescope-mcp --dev
+composer require lucianotonet/laravel-boost-telescope --dev
 ```
 
 ### Integration with Laravel Boost
@@ -47,11 +44,11 @@ The Telescope debugging tools will be automatically discovered and available to 
 
 ```env
 # Enable/disable the package
-TELESCOPE_MCP_ENABLED=true
+LARAVEL_BOOST_TELESCOPE_ENABLED=true
 
 # Logging
-TELESCOPE_MCP_LOGGING_ENABLED=true
-TELESCOPE_MCP_LOG_CHANNEL=stack
+LARAVEL_BOOST_TELESCOPE_LOGGING_ENABLED=true
+LARAVEL_BOOST_TELESCOPE_LOG_CHANNEL=stack
 ```
 
 ### Configuration File
@@ -59,7 +56,7 @@ TELESCOPE_MCP_LOG_CHANNEL=stack
 Publish and customize the configuration:
 
 ```bash
-php artisan vendor:publish --tag=telescope-mcp-config
+php artisan vendor:publish --tag=laravel-boost-telescope-config
 ```
 
 ## Available Tools

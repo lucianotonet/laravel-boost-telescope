@@ -1,13 +1,13 @@
 <?php
 
-namespace LucianoTonet\TelescopeMcp\MCP\Tools;
+namespace LucianoTonet\LaravelBoostTelescope\MCP\Tools;
 
-use LucianoTonet\TelescopeMcp\Support\Logger;
+use LucianoTonet\LaravelBoostTelescope\Support\Logger;
 
 use Laravel\Telescope\Contracts\EntriesRepository;
 use Laravel\Telescope\EntryType;
 use Laravel\Telescope\Storage\EntryQueryOptions;
-use LucianoTonet\TelescopeMcp\MCP\Tools\Traits\BatchQuerySupport;
+use LucianoTonet\LaravelBoostTelescope\MCP\Tools\Traits\BatchQuerySupport;
 
 /**
  * Tool for interacting with view renderings recorded by Telescope.

@@ -1,13 +1,13 @@
 <?php
 
-use LucianoTonet\TelescopeMcp\MCP\TelescopeMcpServer;
+use LucianoTonet\LaravelBoostTelescope\MCP\BoostTelescopeServer;
 
 beforeEach(function () {
-    $this->server = app(TelescopeMcpServer::class);
+    $this->server = app(BoostTelescopeServer::class);
 });
 
 test('server can be instantiated', function () {
-    expect($this->server)->toBeInstanceOf(TelescopeMcpServer::class);
+    expect($this->server)->toBeInstanceOf(BoostTelescopeServer::class);
 });
 
 test('server has manifest', function () {
@@ -16,7 +16,7 @@ test('server has manifest', function () {
     expect($manifest)
         ->toBeArray()
         ->toHaveKeys(['name', 'version', 'description', 'tools'])
-        ->and($manifest['name'])->toBe('Laravel Telescope MCP')
+        ->and($manifest['name'])->toBe('Laravel Boost Telescope')
         ->and($manifest['version'])->toBe('1.0.0')
     ;
 });

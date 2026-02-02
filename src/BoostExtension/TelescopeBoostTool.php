@@ -1,22 +1,22 @@
 <?php
 
-namespace LucianoTonet\TelescopeMcp\BoostExtension;
+namespace LucianoTonet\LaravelBoostTelescope\BoostExtension;
 
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Tool;
-use LucianoTonet\TelescopeMcp\MCP\TelescopeMcpServer;
+use LucianoTonet\LaravelBoostTelescope\MCP\BoostTelescopeServer;
 
 /**
- * Base class for Telescope MCP Tools that integrate with Laravel Boost.
+ * Base class for Telescope tools that integrate with Laravel Boost.
  */
 abstract class TelescopeBoostTool extends Tool
 {
-    protected TelescopeMcpServer $server;
+    protected BoostTelescopeServer $server;
 
     public function __construct()
     {
-        $this->server = app(TelescopeMcpServer::class);
+        $this->server = app(BoostTelescopeServer::class);
     }
 
     /**
@@ -33,7 +33,7 @@ abstract class TelescopeBoostTool extends Tool
         // Extract the tool name from the class name
         $toolName = $this->getToolNameFromClass();
 
-        // Execute through TelescopeMcpServer
+        // Execute through BoostTelescopeServer
         $result = $this->server->executeTool($toolName, $arguments);
 
         // Return structured JSON response as expected by Laravel Boost
@@ -52,7 +52,7 @@ abstract class TelescopeBoostTool extends Tool
         // Remove 'Telescope' prefix and 'Tool' suffix
         $name = str_replace(['Telescope', 'Tool'], '', $className);
 
-        // Convert to kebab-case as used internally by Telescope MCP tools
+        // Convert to kebab-case as used internally by Telescope tools
         return strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', $name));
     }
 }

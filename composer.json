@@ -1,5 +1,5 @@
 {
-    "name": "lucianotonet/laravel-telescope-mcp",
+    "name": "lucianotonet/laravel-boost-telescope",
     "description": "Laravel Boost plugin providing AI-powered debugging tools via Laravel Telescope's structured telemetry data",
     "license": "MIT",
     "authors": [
@@ -22,8 +22,8 @@
         "monitoring"
     ],
     "support": {
-        "issues": "https://github.com/lucianotonet/laravel-telescope-mcp/issues",
-        "source": "https://github.com/lucianotonet/laravel-telescope-mcp"
+        "issues": "https://github.com/lucianotonet/laravel-boost-telescope/issues",
+        "source": "https://github.com/lucianotonet/laravel-boost-telescope"
     },
     "require": {
         "php": "^8.2",
@@ -39,7 +39,7 @@
     },
     "autoload": {
         "psr-4": {
-            "LucianoTonet\\TelescopeMcp\\": "src/"
+            "LucianoTonet\\LaravelBoostTelescope\\": "src/"
         }
     },
     "autoload-dev": {
@@ -50,7 +50,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "LucianoTonet\\TelescopeMcp\\TelescopeMcpServiceProvider"
+                "LucianoTonet\\LaravelBoostTelescope\\BoostTelescopeServiceProvider"
             ]
         }
     },

@@ -1,8 +1,8 @@
 <?php
 
 use Carbon\Carbon;
-use LucianoTonet\TelescopeMcp\MCP\Tools\AbstractTool;
-use LucianoTonet\TelescopeMcp\Support\DateFormatter;
+use LucianoTonet\LaravelBoostTelescope\MCP\Tools\AbstractTool;
+use LucianoTonet\LaravelBoostTelescope\Support\DateFormatter;
 
 test('it formats dates correctly', function () {
     $date = Carbon::now();

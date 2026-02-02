@@ -1,18 +1,20 @@
 <?php
 
-namespace LucianoTonet\TelescopeMcp;
+namespace LucianoTonet\LaravelBoostTelescope;
 
 use Illuminate\Support\ServiceProvider;
+use Laravel\Telescope\Contracts\EntriesRepository;
 use Laravel\Telescope\Telescope;
-use LucianoTonet\TelescopeMcp\Support\Logger;
+use LucianoTonet\LaravelBoostTelescope\MCP\BoostTelescopeServer;
+use LucianoTonet\LaravelBoostTelescope\Support\Logger;
 
 /**
- * Main Service Provider for Laravel Telescope MCP.
+ * Service Provider for Laravel Boost Telescope.
  *
- * This provider registers the Telescope MCP tools for Laravel Boost integration.
- * It requires Laravel Telescope and Laravel Boost to function.
+ * Registers config, server, commands and the Boost skill provider.
+ * Requires Laravel Telescope and Laravel Boost to function.
  */
-class TelescopeMcpServiceProvider extends ServiceProvider
+class BoostTelescopeServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap any application services.
@@ -35,12 +37,15 @@ class TelescopeMcpServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(
-            __DIR__.'/../config/telescope-mcp.php',
-            'telescope-mcp'
+            __DIR__.'/../config/laravel-boost-telescope.php',
+            'laravel-boost-telescope'
         );
 
-        // Register the Boost provider for skill discovery
-        $this->app->register(TelescopeBoostServiceProvider::class);
+        $this->app->singleton(BoostTelescopeServer::class, function ($app) {
+            return new BoostTelescopeServer($app->make(EntriesRepository::class));
+        });
+
+        $this->app->register(BoostTelescopeSkillServiceProvider::class);
     }
 
     /**
@@ -52,7 +57,7 @@ class TelescopeMcpServiceProvider extends ServiceProvider
     {
         if (!class_exists(Telescope::class)) {
             throw new \RuntimeException(
-                'Laravel Telescope is required for Telescope MCP to work. '
+                'Laravel Telescope is required for Laravel Boost Telescope to work. '
                 .'Please install it with: composer require laravel/telescope --dev'
             );
         }
@@ -64,8 +69,8 @@ class TelescopeMcpServiceProvider extends ServiceProvider
     protected function registerPublishing(): void
     {
         $this->publishes([
-            __DIR__.'/../config/telescope-mcp.php' => config_path('telescope-mcp.php'),
-        ], 'telescope-mcp-config');
+            __DIR__.'/../config/laravel-boost-telescope.php' => config_path('laravel-boost-telescope.php'),
+        ], 'laravel-boost-telescope-config');
     }
 
     /**

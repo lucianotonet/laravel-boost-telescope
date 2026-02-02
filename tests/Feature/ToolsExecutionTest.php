@@ -3,14 +3,14 @@
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use LucianoTonet\TelescopeMcp\MCP\TelescopeMcpServer;
+use LucianoTonet\LaravelBoostTelescope\MCP\BoostTelescopeServer;
 
 beforeEach(function () {
-    $this->server = app(TelescopeMcpServer::class);
+    $this->server = app(BoostTelescopeServer::class);
 });
 
 test('logs tool can be executed', function () {
-    Log::info('Test log message for Telescope MCP');
+    Log::info('Test log message for Laravel Boost Telescope');
 
     $result = $this->server->executeTool('logs', ['limit' => 10]);
 

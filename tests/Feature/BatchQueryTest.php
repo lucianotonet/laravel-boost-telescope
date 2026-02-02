@@ -4,10 +4,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Str;
-use LucianoTonet\TelescopeMcp\MCP\TelescopeMcpServer;
+use LucianoTonet\LaravelBoostTelescope\MCP\BoostTelescopeServer;
 
 beforeEach(function () {
-    $this->server = app(TelescopeMcpServer::class);
+    $this->server = app(BoostTelescopeServer::class);
     
     // Create tags table if not exists (required by Repository)
     if (!Schema::connection('testbench')->hasTable('telescope_entries_tags')) {
@@ -28,9 +28,11 @@ test('can filter queries by request_id (via batch_id)', function () {
     $batchId1 = (string) Str::uuid();
     $batchId2 = (string) Str::uuid();
     $requestId = (string) Str::uuid();
-    
+    $queryId1 = (string) Str::uuid();
+    $queryId2 = (string) Str::uuid();
+
     // 1. Create the Request entry
-    DB::table('telescope_entries')->insert([
+    DB::connection('testbench')->table('telescope_entries')->insert([
         'sequence' => 100,
         'uuid' => $requestId,
         'batch_id' => $batchId1,
@@ -40,10 +42,9 @@ test('can filter queries by request_id (via batch_id)', function () {
         'content' => json_encode(['uri' => '/test-uri', 'method' => 'GET']),
         'created_at' => now(),
     ]);
-    
+
     // 2. Create a Query entry associated with the SAME batch
-    $queryId1 = (string) Str::uuid();
-    DB::table('telescope_entries')->insert([
+    DB::connection('testbench')->table('telescope_entries')->insert([
         'sequence' => 101,
         'uuid' => $queryId1,
         'batch_id' => $batchId1,
@@ -53,10 +54,9 @@ test('can filter queries by request_id (via batch_id)', function () {
         'content' => json_encode(['sql' => 'SELECT * FROM users', 'time' => 1.2]),
         'created_at' => now(),
     ]);
-    
+
     // 3. Create a Query entry associated with a DIFFERENT batch
-    $queryId2 = (string) Str::uuid();
-    DB::table('telescope_entries')->insert([
+    DB::connection('testbench')->table('telescope_entries')->insert([
         'sequence' => 102,
         'uuid' => $queryId2,
         'batch_id' => $batchId2,
@@ -67,9 +67,9 @@ test('can filter queries by request_id (via batch_id)', function () {
         'created_at' => now(),
     ]);
 
-    // Mock EntriesRepository to avoid 'telescope_entries_tags' table issue
+    // Mock EntriesRepository for the find() call only
     $mockRepo = Mockery::mock(\Laravel\Telescope\Contracts\EntriesRepository::class);
-    
+
     $entryResult = new \Laravel\Telescope\EntryResult(
         $requestId,
         100,
@@ -84,10 +84,10 @@ test('can filter queries by request_id (via batch_id)', function () {
     $mockRepo->shouldReceive('find')
         ->with($requestId)
         ->andReturn($entryResult);
-        
+
     // Bind mock and re-instantiate server
     $this->app->instance(\Laravel\Telescope\Contracts\EntriesRepository::class, $mockRepo);
-    $this->server = app(TelescopeMcpServer::class);
+    $this->server = new BoostTelescopeServer($mockRepo);
 
     // Execute the queries tool with request_id
     $result = $this->server->executeTool('queries', [
@@ -95,44 +95,21 @@ test('can filter queries by request_id (via batch_id)', function () {
     ]);
 
     $responseText = $result['content'][0]['text'];
-    
-    if (str_starts_with($responseText, 'Error:')) {
-        echo "Response Text: " . $responseText . "\n";
-        $entries = DB::table('telescope_entries')->get();
-        echo "Entries count: " . $entries->count() . "\n";
-        echo "Request ID searched: " . $requestId . "\n";
-        foreach ($entries as $e) {
-            echo "Entry: {$e->uuid} (Type: {$e->type}, Batch: {$e->batch_id})\n";
-        }
-    }
 
     // Verify format - it returns mixed text and JSON
-    if (str_contains($responseText, '--- JSON Data ---')) {
-        $parts = explode("--- JSON Data ---", $responseText);
-        $jsonStr = trim($parts[1]);
-        $data = json_decode($jsonStr, true);
-    } else {
-        // Fallback (shouldn't happen with current tool impl)
-        $data = json_decode($responseText, true);
-    }
-    
+    expect($responseText)->not->toStartWith('Error:');
+    expect($responseText)->toContain('--- JSON Data ---');
+
+    $parts = explode("--- JSON Data ---", $responseText);
+    $jsonStr = trim($parts[1]);
+    $data = json_decode($jsonStr, true);
+
     expect($data)->toBeArray();
-    
-    // Check filtering
-    $ids = array_column($data['queries'] ?? [], 'id'); 
-    // The previous implementation returned ['queries' => [...]] in JSON.
-    
-    // If usage of array_column on $data was assuming list of queries directly.
-    // Let's check QueriesTool output format.
-    // It returns: json_encode(['request_id' => ..., 'queries' => [...]]);
-    
-    if (isset($data['queries'])) {
-        $ids = array_column($data['queries'], 'id');
-    } else {
-        // Fallback if structure is different
-        $ids = array_column($data, 'id');
-    }
-    
+    expect($data)->toHaveKey('queries');
+
+    // Check filtering - only query from batchId1 should be present
+    $ids = array_column($data['queries'], 'id');
+
     expect($ids)->toContain($queryId1);
     expect($ids)->not->toContain($queryId2);
 });
