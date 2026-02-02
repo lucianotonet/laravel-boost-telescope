@@ -22,6 +22,7 @@ class TelescopeRequestsTool extends TelescopeBoostTool
         return [
             'id' => $schema->string()->description('Get details of a specific entry by ID'),
             'limit' => $schema->integer()->default(50)->description('Maximum number of entries to return'),
+            'include_related' => $schema->boolean()->default(true)->description('Include related entries summary'),
         ];
     }
 }

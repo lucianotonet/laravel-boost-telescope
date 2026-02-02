@@ -8,12 +8,12 @@ When debugging, use these tools based on the scenario:
 
 | Scenario | Tool | Key Parameters |
 |----------|------|----------------|
-| Application errors | `telescope_exceptions` | `id`, `limit` |
-| Slow performance | `telescope_queries` | `slow: true` |
+| Application errors | `telescope_exceptions` | `id`, `limit`, `request_id` |
+| Slow performance | `telescope_queries` | `slow: true`, `request_id` |
 | API/HTTP issues | `telescope_requests` | `method`, `status`, `path` |
 | Job failures | `telescope_jobs` | `failed: true` |
-| Cache problems | `telescope_cache` | `limit` |
-| Log analysis | `telescope_logs` | `level` |
+| Cache problems | `telescope_cache` | `limit`, `request_id` |
+| Log analysis | `telescope_logs` | `level`, `request_id` |
 
 ## Available Tools
 
@@ -51,6 +51,6 @@ When debugging, use these tools based on the scenario:
 ## Best Practices
 
 1. **Start broad, then narrow**: List entries first, then get specific details with `id`
-2. **Correlate data**: Cross-reference requests with queries and exceptions
+2. **Correlate data**: Use `request_id` from `telescope_requests` to find related logs, queries, and exceptions
 3. **Use filters**: Leverage `slow`, `failed`, `status`, `level` parameters
 4. **Check context**: Each entry includes timestamps and full context data

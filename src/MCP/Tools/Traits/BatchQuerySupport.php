@@ -3,6 +3,7 @@
 namespace LucianoTonet\TelescopeMcp\MCP\Tools\Traits;
 
 use Illuminate\Support\Facades\DB;
+use LucianoTonet\TelescopeMcp\Support\Logger;
 
 /**
  * Trait providing batch query support for tools.
@@ -25,6 +26,7 @@ trait BatchQuerySupport
             $entry = $this->entriesRepository->find($entryId);
             return $entry->batchId ?? null;
         } catch (\Exception $e) {
+            Logger::error("Error finding batchId for entry {$entryId}: " . $e->getMessage());
             return null;
         }
     }

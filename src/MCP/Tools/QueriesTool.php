@@ -5,6 +5,7 @@ namespace LucianoTonet\TelescopeMcp\MCP\Tools;
 use Laravel\Telescope\EntryType;
 use Laravel\Telescope\Storage\EntryQueryOptions;
 use LucianoTonet\TelescopeMcp\Support\DateFormatter;
+use LucianoTonet\TelescopeMcp\Support\Logger;
 use LucianoTonet\TelescopeMcp\MCP\Tools\Traits\BatchQuerySupport;
 
 class QueriesTool extends AbstractTool

@@ -2,6 +2,8 @@
 
 namespace LucianoTonet\TelescopeMcp\MCP\Tools;
 
+use LucianoTonet\TelescopeMcp\Support\Logger;
+
 use Laravel\Telescope\Contracts\EntriesRepository;
 use Laravel\Telescope\EntryType;
 use Laravel\Telescope\Storage\EntryQueryOptions;

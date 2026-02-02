@@ -36,6 +36,7 @@ Lists and analyzes HTTP requests recorded by Telescope.
 |-----------|------|----------|---------|-------------|
 | `id` | string | No | - | Get details of specific request |
 | `limit` | integer | No | 50 | Maximum requests to return (max: 100) |
+| `include_related` | boolean | No | true | Include related entries summary |
 | `method` | string | No | - | Filter by HTTP method (GET, POST, PUT, DELETE, etc.) |
 | `status` | integer | No | - | Filter by HTTP status code (200, 404, 500, etc.) |
 | `path` | string | No | - | Filter by request path |
@@ -82,6 +83,7 @@ Access application log entries with context.
 |-----------|------|----------|---------|-------------|
 | `id` | string | No | - | Get details of specific log entry |
 | `limit` | integer | No | 50 | Maximum logs to return (max: 100) |
+| `request_id` | string | No | - | Filter by the request ID (uses batch_id grouping) |
 | `level` | string | No | - | Filter by level: emergency, alert, critical, error, warning, notice, info, debug |
 
 ### Response Fields
@@ -104,6 +106,7 @@ Get recent exceptions with full stack traces.
 |-----------|------|----------|---------|-------------|
 | `id` | string | No | - | Get details of specific exception |
 | `limit` | integer | No | 50 | Maximum exceptions to return (max: 100) |
+| `request_id` | string | No | - | Filter by the request ID (uses batch_id grouping) |
 
 ### Response Fields
 
@@ -132,6 +135,7 @@ Analyze database queries with execution time.
 |-----------|------|----------|---------|-------------|
 | `id` | string | No | - | Get details of specific query |
 | `limit` | integer | No | 50 | Maximum queries to return (max: 100) |
+| `request_id` | string | No | - | Filter by the request ID (uses batch_id grouping) |
 | `slow` | boolean | No | false | Filter only slow queries (>100ms) |
 
 ### Response Fields
@@ -207,6 +211,7 @@ Analyze cache operations.
 |-----------|------|----------|---------|-------------|
 | `id` | string | No | - | Get details of specific cache operation |
 | `limit` | integer | No | 50 | Maximum operations to return (max: 100) |
+| `request_id` | string | No | - | Filter by the request ID (uses batch_id grouping) |
 
 ### Response Fields
 
@@ -273,6 +278,7 @@ View dispatched events and listeners.
 |-----------|------|----------|---------|-------------|
 | `id` | string | No | - | Get details of specific event |
 | `limit` | integer | No | 50 | Maximum events to return (max: 100) |
+| `request_id` | string | No | - | Filter by the request ID (uses batch_id grouping) |
 
 ### Response Fields
 
@@ -362,6 +368,7 @@ Track Eloquent model operations.
 |-----------|------|----------|---------|-------------|
 | `id` | string | No | - | Get details of specific model operation |
 | `limit` | integer | No | 50 | Maximum operations to return (max: 100) |
+| `request_id` | string | No | - | Filter by the request ID (uses batch_id grouping) |
 
 ### Response Fields
 
@@ -384,6 +391,7 @@ Track view rendering.
 |-----------|------|----------|---------|-------------|
 | `id` | string | No | - | Get details of specific view |
 | `limit` | integer | No | 50 | Maximum views to return (max: 100) |
+| `request_id` | string | No | - | Filter by the request ID (uses batch_id grouping) |
 
 ### Response Fields
 

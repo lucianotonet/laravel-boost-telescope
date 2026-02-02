@@ -22,6 +22,7 @@ class TelescopeEventsTool extends TelescopeBoostTool
         return [
             'id' => $schema->string()->description('Get details of a specific entry by ID'),
             'limit' => $schema->integer()->default(50)->description('Maximum number of entries to return'),
+            'request_id' => $schema->string()->description('Filter by the request ID (uses batch_id grouping)'),
         ];
     }
 }

@@ -54,6 +54,7 @@ Get recent exceptions with full-stack traces and context.
 **Parameters:**
 - `id` (string, optional): Get details of a specific exception
 - `limit` (integer, default: 50): Maximum exceptions to return
+- `request_id` (string, optional): Filter by the request ID (uses batch_id grouping)
 
 **Use when:** Investigating application errors, debugging crashes, analyzing error patterns.
 
@@ -65,6 +66,7 @@ Analyze database queries with execution time and SQL details.
 **Parameters:**
 - `id` (string, optional): Get details of a specific query
 - `limit` (integer, default: 50): Maximum queries to return
+- `request_id` (string, optional): Filter by the request ID (uses batch_id grouping)
 - `slow` (boolean, default: false): Filter only slow queries (>100ms)
 
 **Use when:** Optimizing database performance, finding N+1 queries, analyzing slow operations.
@@ -77,6 +79,7 @@ View HTTP requests with headers, payloads, and response details.
 **Parameters:**
 - `id` (string, optional): Get details of a specific request
 - `limit` (integer, default: 50): Maximum requests to return
+- `include_related` (boolean, default: true): Include related entries summary
 - `method` (string, optional): Filter by HTTP method (GET, POST, etc.)
 - `status` (integer, optional): Filter by HTTP status code
 - `path` (string, optional): Filter by request path
@@ -91,6 +94,7 @@ Access application log entries with context.
 **Parameters:**
 - `id` (string, optional): Get details of a specific log entry
 - `limit` (integer, default: 50): Maximum logs to return
+- `request_id` (string, optional): Filter by the request ID (uses batch_id grouping)
 - `level` (string, optional): Filter by log level (error, warning, info, debug)
 
 **Use when:** Tracing application flow, debugging issues, monitoring application behavior.
@@ -130,6 +134,7 @@ Analyze cache operations (hits, misses, writes).
 **Parameters:**
 - `id` (string, optional): Get details of a specific cache operation
 - `limit` (integer, default: 50): Maximum operations to return
+- `request_id` (string, optional): Filter by the request ID (uses batch_id grouping)
 
 **Use when:** Optimizing cache usage, debugging cache misses, analyzing cache patterns.
 
@@ -152,6 +157,7 @@ Track Eloquent model operations.
 **Parameters:**
 - `id` (string, optional): Get details of a specific model operation
 - `limit` (integer, default: 50): Maximum operations to return
+- `request_id` (string, optional): Filter by the request ID (uses batch_id grouping)
 
 **Use when:** Debugging model events, tracking data changes.
 
@@ -211,6 +217,7 @@ View dispatched events and listeners.
 **Parameters:**
 - `id` (string, optional): Get details of a specific event
 - `limit` (integer, default: 50): Maximum events to return
+- `request_id` (string, optional): Filter by the request ID (uses batch_id grouping)
 
 **Use when:** Debugging event-driven logic, tracing event propagation.
 
@@ -233,6 +240,7 @@ Track view rendering.
 **Parameters:**
 - `id` (string, optional): Get details of a specific view
 - `limit` (integer, default: 50): Maximum views to return
+- `request_id` (string, optional): Filter by the request ID (uses batch_id grouping)
 
 **Use when:** Debugging view rendering, analyzing template usage.
 
