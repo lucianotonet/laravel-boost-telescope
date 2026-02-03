@@ -61,7 +61,7 @@ php artisan vendor:publish --tag=laravel-boost-telescope-config
 
 ## Available Tools
 
-The package provides 20 specialized debugging tools:
+The package provides 19 specialized debugging tools:
 
 ### Core Debugging
 - `telescope_exceptions` - Application exceptions with stack traces

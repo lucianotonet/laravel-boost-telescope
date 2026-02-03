@@ -8,7 +8,7 @@ All notable changes to `laravel-boost-telescope` will be documented in this file
 
 ### Added
 - Initial release as Laravel Boost plugin for Telescope integration
-- 20 specialized debugging tools accessible via Laravel Boost MCP server
+- 19 specialized debugging tools accessible via Laravel Boost MCP server
 - `BoostTelescopeServiceProvider` for automatic tool discovery and registration
 - `BoostTelescopeSkillServiceProvider` for Boost skills integration
 - `TelescopeBoostTool` base class for tool wrappers
