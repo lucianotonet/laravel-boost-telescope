@@ -2,12 +2,10 @@
 
 namespace LucianoTonet\LaravelBoostTelescope\MCP\Tools;
 
-use LucianoTonet\LaravelBoostTelescope\Support\Logger;
-
-use Laravel\Telescope\Contracts\EntriesRepository;
 use Laravel\Telescope\EntryType;
 use Laravel\Telescope\Storage\EntryQueryOptions;
 use LucianoTonet\LaravelBoostTelescope\MCP\Tools\Traits\BatchQuerySupport;
+use LucianoTonet\LaravelBoostTelescope\Support\Logger;
 
 /**
  * Tool for interacting with log entries recorded by Telescope.
@@ -17,9 +15,7 @@ class LogsTool extends AbstractTool
     use BatchQuerySupport;
 
     /**
-     * Returns the tool's short name
-     *
-     * @return string
+     * Returns the tool's short name.
      */
     public function getShortName(): string
     {
@@ -27,9 +23,7 @@ class LogsTool extends AbstractTool
     }
 
     /**
-     * Returns the tool's schema
-     *
-     * @return array
+     * Returns the tool's schema.
      */
     public function getSchema(): array
     {
@@ -45,7 +39,7 @@ class LogsTool extends AbstractTool
                     ],
                     'request_id' => [
                         'type' => 'string',
-                        'description' => 'Filter logs by the request ID they belong to (uses batch_id grouping)'
+                        'description' => 'Filter logs by the request ID they belong to (uses batch_id grouping)',
                     ],
                     'limit' => [
                         'type' => 'integer',
@@ -95,18 +89,18 @@ class LogsTool extends AbstractTool
                 ],
                 [
                     'description' => 'List error logs',
-                    'params' => ['level' => 'error']
+                    'params' => ['level' => 'error'],
                 ],
                 [
                     'description' => 'List logs for a specific request',
-                    'params' => ['request_id' => 'abc123']
-                ]
-            ]
+                    'params' => ['request_id' => 'abc123'],
+                ],
+            ],
         ];
     }
 
     /**
-     * Executes the tool with the given parameters
+     * Executes the tool with the given parameters.
      *
      * @param array $params Tool parameters
      *
@@ -139,7 +133,7 @@ class LogsTool extends AbstractTool
     }
 
     /**
-     * Lists log entries
+     * Lists log entries.
      *
      * @param array $params Tool parameters
      *
@@ -187,9 +181,14 @@ class LogsTool extends AbstractTool
 
         // Tabular formatting for better readability
         $table = "Log Entries:\n\n";
-        $table .= sprintf("%-5s %-10s %-60s %-20s\n",
-            "ID", "Level", "Message", "Created At");
-        $table .= str_repeat("-", 100) . "\n";
+        $table .= sprintf(
+            "%-5s %-10s %-60s %-20s\n",
+            'ID',
+            'Level',
+            'Message',
+            'Created At'
+        );
+        $table .= str_repeat('-', 100)."\n";
 
         foreach ($logs as $log) {
             // Truncate message if too long
@@ -217,15 +216,16 @@ class LogsTool extends AbstractTool
     }
 
     /**
-     * Lists logs for a specific request using batch_id
+     * Lists logs for a specific request using batch_id.
      *
      * @param string $requestId The request ID
-     * @param array $params Tool parameters
+     * @param array  $params    Tool parameters
+     *
      * @return array Response in MCP format
      */
     protected function listLogsForRequest(string $requestId, array $params): array
     {
-        Logger::info($this->getName() . ' listing logs for request', ['request_id' => $requestId]);
+        Logger::info($this->getName().' listing logs for request', ['request_id' => $requestId]);
 
         // Get the batch_id for this request
         $batchId = $this->getBatchIdForRequest($requestId);
@@ -234,7 +234,7 @@ class LogsTool extends AbstractTool
             return $this->formatError("Request not found or has no batch ID: {$requestId}");
         }
 
-        $limit = isset($params['limit']) ? min((int)$params['limit'], 100) : 50;
+        $limit = isset($params['limit']) ? min((int) $params['limit'], 100) : 50;
 
         // Get logs for this batch
         $entries = $this->getEntriesByBatchId($batchId, 'log', $limit);
@@ -261,25 +261,26 @@ class LogsTool extends AbstractTool
                 'id' => $entry->id,
                 'level' => $level,
                 'message' => $message,
-                'created_at' => $createdAt
+                'created_at' => $createdAt,
             ];
         }
 
         // Tabular formatting with request context
         $table = "Logs for Request: {$requestId}\n";
         $table .= "Batch ID: {$batchId}\n";
-        $table .= "Total: " . count($logs) . " logs\n\n";
-        $table .= sprintf("%-5s %-10s %-60s %-20s\n", "ID", "Level", "Message", "Created At");
-        $table .= str_repeat("-", 100) . "\n";
+        $table .= 'Total: '.count($logs)." logs\n\n";
+        $table .= sprintf("%-5s %-10s %-60s %-20s\n", 'ID', 'Level', 'Message', 'Created At');
+        $table .= str_repeat('-', 100)."\n";
 
         foreach ($logs as $log) {
             $message = $log['message'];
             $message = $this->safeString($message);
             if (strlen($message) > 60) {
-                $message = substr($message, 0, 57) . "...";
+                $message = substr($message, 0, 57).'...';
             }
 
-            $table .= sprintf("%-5s %-10s %-60s %-20s\n",
+            $table .= sprintf(
+                "%-5s %-10s %-60s %-20s\n",
                 $log['id'],
                 strtoupper($log['level']),
                 $message,
@@ -287,18 +288,18 @@ class LogsTool extends AbstractTool
             );
         }
 
-        $combinedText = $table . "\n\n--- JSON Data ---\n" . json_encode([
+        $combinedText = $table."\n\n--- JSON Data ---\n".json_encode([
             'request_id' => $requestId,
             'batch_id' => $batchId,
             'total' => count($logs),
-            'logs' => $logs
+            'logs' => $logs,
         ], JSON_PRETTY_PRINT);
 
         return $this->formatResponse($combinedText);
     }
 
     /**
-     * Gets details of a specific log entry
+     * Gets details of a specific log entry.
      *
      * @param string $id The log entry ID
      *
@@ -320,8 +321,8 @@ class LogsTool extends AbstractTool
         // Detailed formatting of the log entry
         $output = "Log Entry Details:\n\n";
         $output .= "ID: {$entry->id}\n";
-        $output .= "Level: " . strtoupper($content['level'] ?? 'Unknown') . "\n";
-        $output .= "Message: " . ($content['message'] ?? 'No message') . "\n";
+        $output .= 'Level: '.strtoupper($content['level'] ?? 'Unknown')."\n";
+        $output .= 'Message: '.($content['message'] ?? 'No message')."\n";
 
         $createdAt = DateFormatter::format($entry->createdAt);
         $output .= "Created At: {$createdAt}\n\n";

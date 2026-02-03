@@ -148,5 +148,6 @@ test('abstract tool safeString converts various types', function () {
         ->and($tool->testSafeString(false))->toBe('false')
         ->and($tool->testSafeString(123))->toBe('123')
         ->and($tool->testSafeString('hello'))->toBe('hello')
-        ->and($tool->testSafeString(['a' => 1]))->toBeJson();
+        ->and($tool->testSafeString(['a' => 1]))->toBeJson()
+    ;
 });

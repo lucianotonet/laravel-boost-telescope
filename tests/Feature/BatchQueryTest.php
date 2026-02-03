@@ -1,14 +1,16 @@
 <?php
 
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Str;
+use Laravel\Telescope\Contracts\EntriesRepository;
+use Laravel\Telescope\EntryResult;
 use LucianoTonet\LaravelBoostTelescope\MCP\BoostTelescopeServer;
 
 beforeEach(function () {
     $this->server = app(BoostTelescopeServer::class);
-    
+
     // Create tags table if not exists (required by Repository)
     if (!Schema::connection('testbench')->hasTable('telescope_entries_tags')) {
         Schema::connection('testbench')->create('telescope_entries_tags', function (Blueprint $table) {
@@ -68,9 +70,9 @@ test('can filter queries by request_id (via batch_id)', function () {
     ]);
 
     // Mock EntriesRepository for the find() call only
-    $mockRepo = Mockery::mock(\Laravel\Telescope\Contracts\EntriesRepository::class);
+    $mockRepo = Mockery::mock(EntriesRepository::class);
 
-    $entryResult = new \Laravel\Telescope\EntryResult(
+    $entryResult = new EntryResult(
         $requestId,
         100,
         $batchId1,
@@ -83,10 +85,11 @@ test('can filter queries by request_id (via batch_id)', function () {
 
     $mockRepo->shouldReceive('find')
         ->with($requestId)
-        ->andReturn($entryResult);
+        ->andReturn($entryResult)
+    ;
 
     // Bind mock and re-instantiate server
-    $this->app->instance(\Laravel\Telescope\Contracts\EntriesRepository::class, $mockRepo);
+    $this->app->instance(EntriesRepository::class, $mockRepo);
     $this->server = new BoostTelescopeServer($mockRepo);
 
     // Execute the queries tool with request_id
@@ -100,7 +103,7 @@ test('can filter queries by request_id (via batch_id)', function () {
     expect($responseText)->not->toStartWith('Error:');
     expect($responseText)->toContain('--- JSON Data ---');
 
-    $parts = explode("--- JSON Data ---", $responseText);
+    $parts = explode('--- JSON Data ---', $responseText);
     $jsonStr = trim($parts[1]);
     $data = json_decode($jsonStr, true);
 
@@ -118,8 +121,8 @@ test('returns error if request_id not found', function () {
     $result = $this->server->executeTool('queries', [
         'request_id' => 'non-existent-uuid',
     ]);
-    
+
     $responseText = $result['content'][0]['text'];
-    
+
     expect($responseText)->toContain('Request not found');
 });

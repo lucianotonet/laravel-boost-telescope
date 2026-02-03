@@ -2,12 +2,11 @@
 
 namespace LucianoTonet\LaravelBoostTelescope\MCP\Tools;
 
-use LucianoTonet\LaravelBoostTelescope\Support\Logger;
-
 use Laravel\Telescope\EntryType;
 use Laravel\Telescope\Storage\EntryQueryOptions;
-use LucianoTonet\LaravelBoostTelescope\Support\DateFormatter;
 use LucianoTonet\LaravelBoostTelescope\MCP\Tools\Traits\BatchQuerySupport;
+use LucianoTonet\LaravelBoostTelescope\Support\DateFormatter;
+use LucianoTonet\LaravelBoostTelescope\Support\Logger;
 
 class ExceptionsTool extends AbstractTool
 {
@@ -38,7 +37,7 @@ class ExceptionsTool extends AbstractTool
                     ],
                     'request_id' => [
                         'type' => 'string',
-                        'description' => 'Filter exceptions by the request ID they belong to (uses batch_id grouping)'
+                        'description' => 'Filter exceptions by the request ID they belong to (uses batch_id grouping)',
                     ],
                     'limit' => [
                         'type' => 'integer',
@@ -78,14 +77,14 @@ class ExceptionsTool extends AbstractTool
                 [
                     'description' => 'Ver detalhes de uma exceção específica',
                     'params' => [
-                        'id' => '123456'
-                    ]
+                        'id' => '123456',
+                    ],
                 ],
                 [
                     'description' => 'List exceptions for a specific request',
-                    'params' => ['request_id' => 'abc123']
-                ]
-            ]
+                    'params' => ['request_id' => 'abc123'],
+                ],
+            ],
         ];
     }
 
@@ -114,7 +113,7 @@ class ExceptionsTool extends AbstractTool
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return $this->formatError('Error: ' . $e->getMessage());
+            return $this->formatError('Error: '.$e->getMessage());
         }
     }
 
@@ -126,7 +125,7 @@ class ExceptionsTool extends AbstractTool
     protected function listExceptions($params)
     {
         // Definir limite para a consulta
-        $limit = isset($params['limit']) ? min((int)$params['limit'], 100) : 50;
+        $limit = isset($params['limit']) ? min((int) $params['limit'], 100) : 50;
 
         // Configurar opções
         $options = new EntryQueryOptions();
@@ -165,8 +164,8 @@ class ExceptionsTool extends AbstractTool
 
         // Formatação tabular para facilitar a leitura
         $table = "Application Exceptions:\n\n";
-        $table .= sprintf("%-5s %-30s %-40s %-20s\n", "ID", "Exception", "Message", "Occurred At");
-        $table .= str_repeat("-", 100) . "\n";
+        $table .= sprintf("%-5s %-30s %-40s %-20s\n", 'ID', 'Exception', 'Message', 'Occurred At');
+        $table .= str_repeat('-', 100)."\n";
 
         foreach ($exceptions as $exception) {
             // Truncar mensagem longa
@@ -192,7 +191,7 @@ class ExceptionsTool extends AbstractTool
             );
         }
 
-        $combinedText = $table . "\n\n--- JSON Data ---\n" . json_encode([
+        $combinedText = $table."\n\n--- JSON Data ---\n".json_encode([
             'total' => count($exceptions),
             'exceptions' => $exceptions,
         ], JSON_PRETTY_PRINT);
@@ -201,15 +200,16 @@ class ExceptionsTool extends AbstractTool
     }
 
     /**
-     * Lists exceptions for a specific request using batch_id
+     * Lists exceptions for a specific request using batch_id.
      *
      * @param string $requestId The request ID
-     * @param array $params Tool parameters
+     * @param array  $params    Tool parameters
+     *
      * @return array Response in MCP format
      */
     protected function listExceptionsForRequest(string $requestId, array $params): array
     {
-        Logger::info($this->getName() . ' listing exceptions for request', ['request_id' => $requestId]);
+        Logger::info($this->getName().' listing exceptions for request', ['request_id' => $requestId]);
 
         // Get the batch_id for this request
         $batchId = $this->getBatchIdForRequest($requestId);
@@ -218,7 +218,7 @@ class ExceptionsTool extends AbstractTool
             return $this->formatError("Request not found or has no batch ID: {$requestId}");
         }
 
-        $limit = isset($params['limit']) ? min((int)$params['limit'], 100) : 50;
+        $limit = isset($params['limit']) ? min((int) $params['limit'], 100) : 50;
 
         // Get exceptions for this batch
         $entries = $this->getEntriesByBatchId($batchId, 'exception', $limit);
@@ -244,26 +244,26 @@ class ExceptionsTool extends AbstractTool
                 'message' => $message,
                 'file' => $file,
                 'line' => $line,
-                'occurred_at' => $createdAt
+                'occurred_at' => $createdAt,
             ];
         }
 
         // Formatação tabular com contexto do request
         $table = "Exceptions for Request: {$requestId}\n";
         $table .= "Batch ID: {$batchId}\n";
-        $table .= "Total: " . count($exceptions) . " exceptions\n\n";
-        $table .= sprintf("%-5s %-30s %-40s %-20s\n", "ID", "Exception", "Message", "Occurred At");
-        $table .= str_repeat("-", 100) . "\n";
+        $table .= 'Total: '.count($exceptions)." exceptions\n\n";
+        $table .= sprintf("%-5s %-30s %-40s %-20s\n", 'ID', 'Exception', 'Message', 'Occurred At');
+        $table .= str_repeat('-', 100)."\n";
 
         foreach ($exceptions as $exception) {
             $message = $exception['message'];
             $message = $this->safeString($message);
             if (strlen($message) > 40) {
-                $message = substr($message, 0, 37) . "...";
+                $message = substr($message, 0, 37).'...';
             }
 
             $className = $exception['class'];
-            if (strpos($className, '\\') !== false) {
+            if (false !== strpos($className, '\\')) {
                 $parts = explode('\\', $className);
                 $className = end($parts);
             }
@@ -277,11 +277,11 @@ class ExceptionsTool extends AbstractTool
             );
         }
 
-        $combinedText = $table . "\n\n--- JSON Data ---\n" . json_encode([
+        $combinedText = $table."\n\n--- JSON Data ---\n".json_encode([
             'request_id' => $requestId,
             'batch_id' => $batchId,
             'total' => count($exceptions),
-            'exceptions' => $exceptions
+            'exceptions' => $exceptions,
         ], JSON_PRETTY_PRINT);
 
         return $this->formatResponse($combinedText);
@@ -294,7 +294,7 @@ class ExceptionsTool extends AbstractTool
      */
     protected function getExceptionDetails($id)
     {
-        Logger::info($this->getName() . ' getting details', ['id' => $id]);
+        Logger::info($this->getName().' getting details', ['id' => $id]);
 
         // Buscar a entrada específica
         $entry = $this->getEntryDetails(EntryType::EXCEPTION, $id);
@@ -311,10 +311,10 @@ class ExceptionsTool extends AbstractTool
         // Detailed formatting of the exception
         $output = "Exception Details:\n\n";
         $output .= "ID: {$entry->id}\n";
-        $output .= "Type: " . (isset($content['class']) ? $content['class'] : 'Unknown') . "\n";
-        $output .= "Message: " . (isset($content['message']) ? $content['message'] : 'No message') . "\n";
-        $output .= "File: " . (isset($content['file']) ? $content['file'] : 'Unknown') . "\n";
-        $output .= "Line: " . (isset($content['line']) ? $content['line'] : 'Unknown') . "\n";
+        $output .= 'Type: '.($content['class'] ?? 'Unknown')."\n";
+        $output .= 'Message: '.($content['message'] ?? 'No message')."\n";
+        $output .= 'File: '.($content['file'] ?? 'Unknown')."\n";
+        $output .= 'Line: '.($content['line'] ?? 'Unknown')."\n";
 
         $output .= "Occurred At: {$createdAt}\n\n";
 
@@ -323,11 +323,11 @@ class ExceptionsTool extends AbstractTool
             $output .= "Stack Trace:\n";
 
             foreach ($content['trace'] as $index => $frame) {
-                $file = isset($frame['file']) ? $frame['file'] : 'Unknown';
-                $line = isset($frame['line']) ? $frame['line'] : 'Unknown';
-                $function = isset($frame['function']) ? $frame['function'] : 'Unknown';
-                $class = isset($frame['class']) ? $frame['class'] : '';
-                $type = isset($frame['type']) ? $frame['type'] : '';
+                $file = $frame['file'] ?? 'Unknown';
+                $line = $frame['line'] ?? 'Unknown';
+                $function = $frame['function'] ?? 'Unknown';
+                $class = $frame['class'] ?? '';
+                $type = $frame['type'] ?? '';
 
                 $output .= sprintf(
                     "#%d %s%s%s() at %s:%s\n",
@@ -347,7 +347,7 @@ class ExceptionsTool extends AbstractTool
             $output .= json_encode($content['context'], JSON_PRETTY_PRINT);
         }
 
-        $combinedText = $output . "\n\n--- JSON Data ---\n" . json_encode([
+        $combinedText = $output."\n\n--- JSON Data ---\n".json_encode([
             'id' => $entry->id,
             'class' => $content['class'] ?? 'Unknown',
             'message' => $content['message'] ?? 'No message',

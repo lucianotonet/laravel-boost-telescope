@@ -2,12 +2,11 @@
 
 namespace LucianoTonet\LaravelBoostTelescope\MCP\Tools;
 
-use LucianoTonet\LaravelBoostTelescope\Support\Logger;
-
 use Laravel\Telescope\EntryType;
 use Laravel\Telescope\Storage\EntryQueryOptions;
-use LucianoTonet\LaravelBoostTelescope\Support\DateFormatter;
 use LucianoTonet\LaravelBoostTelescope\MCP\Tools\Traits\BatchQuerySupport;
+use LucianoTonet\LaravelBoostTelescope\Support\DateFormatter;
+use LucianoTonet\LaravelBoostTelescope\Support\Logger;
 
 class EventsTool extends AbstractTool
 {
@@ -38,7 +37,7 @@ class EventsTool extends AbstractTool
                     ],
                     'request_id' => [
                         'type' => 'string',
-                        'description' => 'Filter events by the request ID they belong to (uses batch_id grouping)'
+                        'description' => 'Filter events by the request ID they belong to (uses batch_id grouping)',
                     ],
                     'limit' => [
                         'type' => 'integer',
@@ -67,18 +66,18 @@ class EventsTool extends AbstractTool
                         ],
                     ],
                 ],
-                'required' => ['content']
+                'required' => ['content'],
             ],
             'examples' => [
                 [
                     'description' => 'List last 10 events',
-                    'params' => ['limit' => 10]
+                    'params' => ['limit' => 10],
                 ],
                 [
                     'description' => 'List events for a specific request',
-                    'params' => ['request_id' => 'abc123']
-                ]
-            ]
+                    'params' => ['request_id' => 'abc123'],
+                ],
+            ],
         ];
     }
 
@@ -107,7 +106,7 @@ class EventsTool extends AbstractTool
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return $this->formatError('Error: ' . $e->getMessage());
+            return $this->formatError('Error: '.$e->getMessage());
         }
     }
 
@@ -117,7 +116,7 @@ class EventsTool extends AbstractTool
     protected function listEvents(array $params): array
     {
         // Definir limite para a consulta
-        $limit = isset($params['limit']) ? min((int)$params['limit'], 100) : 50;
+        $limit = isset($params['limit']) ? min((int) $params['limit'], 100) : 50;
 
         // Configurar opções
         $options = new EntryQueryOptions();
@@ -153,8 +152,8 @@ class EventsTool extends AbstractTool
 
         // Formatação tabular para facilitar a leitura
         $table = "Events:\n\n";
-        $table .= sprintf("%-5s %-60s %-10s %-20s\n", "ID", "Name", "Listeners", "Created At");
-        $table .= str_repeat("-", 100) . "\n";
+        $table .= sprintf("%-5s %-60s %-10s %-20s\n", 'ID', 'Name', 'Listeners', 'Created At');
+        $table .= str_repeat('-', 100)."\n";
 
         foreach ($events as $event) {
             // Truncar nome longo
@@ -173,24 +172,25 @@ class EventsTool extends AbstractTool
             );
         }
 
-        $combinedText = $table . "\n\n--- JSON Data ---\n" . json_encode([
+        $combinedText = $table."\n\n--- JSON Data ---\n".json_encode([
             'total' => count($events),
-            'events' => $events
+            'events' => $events,
         ], JSON_PRETTY_PRINT);
 
         return $this->formatResponse($combinedText);
     }
 
     /**
-     * Lists events for a specific request using batch_id
+     * Lists events for a specific request using batch_id.
      *
      * @param string $requestId The request ID
-     * @param array $params Tool parameters
+     * @param array  $params    Tool parameters
+     *
      * @return array Response in MCP format
      */
     protected function listEventsForRequest(string $requestId, array $params): array
     {
-        Logger::info($this->getName() . ' listing events for request', ['request_id' => $requestId]);
+        Logger::info($this->getName().' listing events for request', ['request_id' => $requestId]);
 
         // Get the batch_id for this request
         $batchId = $this->getBatchIdForRequest($requestId);
@@ -199,7 +199,7 @@ class EventsTool extends AbstractTool
             return $this->formatError("Request not found or has no batch ID: {$requestId}");
         }
 
-        $limit = isset($params['limit']) ? min((int)$params['limit'], 100) : 50;
+        $limit = isset($params['limit']) ? min((int) $params['limit'], 100) : 50;
 
         // Get events for this batch
         $entries = $this->getEntriesByBatchId($batchId, 'event', $limit);
@@ -217,7 +217,7 @@ class EventsTool extends AbstractTool
             $name = $content['name'] ?? 'Unknown';
 
             // Filter by name if specified
-            if (!empty($params['name']) && strpos($name, $params['name']) === false) {
+            if (!empty($params['name']) && false === strpos($name, $params['name'])) {
                 continue;
             }
 
@@ -225,22 +225,22 @@ class EventsTool extends AbstractTool
                 'id' => $entry->id,
                 'name' => $name,
                 'listeners' => isset($content['listeners']) ? count($content['listeners']) : 0,
-                'created_at' => $createdAt
+                'created_at' => $createdAt,
             ];
         }
 
         // Formatação tabular com contexto do request
         $table = "Events for Request: {$requestId}\n";
         $table .= "Batch ID: {$batchId}\n";
-        $table .= "Total: " . count($events) . " events\n\n";
-        $table .= sprintf("%-5s %-60s %-10s %-20s\n", "ID", "Name", "Listeners", "Created At");
-        $table .= str_repeat("-", 100) . "\n";
+        $table .= 'Total: '.count($events)." events\n\n";
+        $table .= sprintf("%-5s %-60s %-10s %-20s\n", 'ID', 'Name', 'Listeners', 'Created At');
+        $table .= str_repeat('-', 100)."\n";
 
         foreach ($events as $event) {
             $name = $event['name'];
             $name = $this->safeString($name);
             if (strlen($name) > 60) {
-                $name = substr($name, 0, 57) . "...";
+                $name = substr($name, 0, 57).'...';
             }
 
             $table .= sprintf(
@@ -252,11 +252,11 @@ class EventsTool extends AbstractTool
             );
         }
 
-        $combinedText = $table . "\n\n--- JSON Data ---\n" . json_encode([
+        $combinedText = $table."\n\n--- JSON Data ---\n".json_encode([
             'request_id' => $requestId,
             'batch_id' => $batchId,
             'total' => count($events),
-            'events' => $events
+            'events' => $events,
         ], JSON_PRETTY_PRINT);
 
         return $this->formatResponse($combinedText);
@@ -267,7 +267,7 @@ class EventsTool extends AbstractTool
      */
     protected function getEventDetails(string $id): array
     {
-        Logger::info($this->getName() . ' getting details', ['id' => $id]);
+        Logger::info($this->getName().' getting details', ['id' => $id]);
 
         // Buscar a entrada específica
         $entry = $this->getEntryDetails(EntryType::EVENT, $id);
@@ -300,12 +300,12 @@ class EventsTool extends AbstractTool
             }
         }
 
-        $combinedText = $output . "\n\n--- JSON Data ---\n" . json_encode([
+        $combinedText = $output."\n\n--- JSON Data ---\n".json_encode([
             'id' => $entry->id,
             'name' => $content['name'] ?? 'Unknown',
             'created_at' => $createdAt,
             'payload' => $content['payload'] ?? [],
-            'listeners' => $content['listeners'] ?? []
+            'listeners' => $content['listeners'] ?? [],
         ], JSON_PRETTY_PRINT);
 
         return $this->formatResponse($combinedText);

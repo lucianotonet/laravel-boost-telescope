@@ -2,12 +2,11 @@
 
 namespace LucianoTonet\LaravelBoostTelescope\MCP\Tools;
 
-use LucianoTonet\LaravelBoostTelescope\Support\DateFormatter;
-use LucianoTonet\LaravelBoostTelescope\Support\Logger;
-
 use Laravel\Telescope\EntryType;
 use Laravel\Telescope\Storage\EntryQueryOptions;
 use LucianoTonet\LaravelBoostTelescope\MCP\Tools\Traits\BatchQuerySupport;
+use LucianoTonet\LaravelBoostTelescope\Support\DateFormatter;
+use LucianoTonet\LaravelBoostTelescope\Support\Logger;
 
 /**
  * Tool for interacting with HTTP requests recorded by Telescope.
@@ -17,9 +16,7 @@ class RequestsTool extends AbstractTool
     use BatchQuerySupport;
 
     /**
-     * Returns the tool's short name
-     *
-     * @return string
+     * Returns the tool's short name.
      */
     public function getShortName(): string
     {
@@ -27,9 +24,7 @@ class RequestsTool extends AbstractTool
     }
 
     /**
-     * Returns the tool's schema
-     *
-     * @return array
+     * Returns the tool's schema.
      */
     public function getSchema(): array
     {
@@ -58,13 +53,13 @@ class RequestsTool extends AbstractTool
                     ],
                     'path' => [
                         'type' => 'string',
-                        'description' => 'Filter by request path'
+                        'description' => 'Filter by request path',
                     ],
                     'include_related' => [
                         'type' => 'boolean',
                         'description' => 'Include summary of related entries (queries, logs, cache, etc.) when viewing details',
-                        'default' => true
-                    ]
+                        'default' => true,
+                    ],
                 ],
                 'required' => [],
             ],
@@ -80,18 +75,18 @@ class RequestsTool extends AbstractTool
                 ],
                 [
                     'description' => 'List failed requests',
-                    'params' => ['status' => 500]
+                    'params' => ['status' => 500],
                 ],
                 [
                     'description' => 'Get request details with related entries',
-                    'params' => ['id' => '12345', 'include_related' => true]
-                ]
-            ]
+                    'params' => ['id' => '12345', 'include_related' => true],
+                ],
+            ],
         ];
     }
 
     /**
-     * Executes the tool with the given parameters
+     * Executes the tool with the given parameters.
      *
      * @param array $params Tool parameters
      *
@@ -105,6 +100,7 @@ class RequestsTool extends AbstractTool
             // Check if details of a specific request were requested
             if ($this->hasId($params)) {
                 $includeRelated = $params['include_related'] ?? true;
+
                 return $this->getRequestDetails($params['id'], $includeRelated);
             }
 
@@ -120,7 +116,7 @@ class RequestsTool extends AbstractTool
     }
 
     /**
-     * Lists HTTP requests recorded by Telescope
+     * Lists HTTP requests recorded by Telescope.
      *
      * @param array $params Query parameters
      *
@@ -179,9 +175,16 @@ class RequestsTool extends AbstractTool
 
         // Tabular formatting for better readability
         $table = "HTTP Requests:\n\n";
-        $table .= sprintf("%-5s %-7s %-50s %-7s %-10s %-20s\n",
-            "ID", "Method", "URI", "Status", "Time (ms)", "Created At");
-        $table .= str_repeat("-", 120) . "\n";
+        $table .= sprintf(
+            "%-5s %-7s %-50s %-7s %-10s %-20s\n",
+            'ID',
+            'Method',
+            'URI',
+            'Status',
+            'Time (ms)',
+            'Created At'
+        );
+        $table .= str_repeat('-', 120)."\n";
 
         foreach ($requests as $request) {
             // Truncate URI if too long
@@ -220,10 +223,11 @@ class RequestsTool extends AbstractTool
     }
 
     /**
-     * Gets details of a specific HTTP request
+     * Gets details of a specific HTTP request.
      *
-     * @param string $id The request ID
-     * @param bool $includeRelated Whether to include related entries summary
+     * @param string $id             The request ID
+     * @param bool   $includeRelated Whether to include related entries summary
+     *
      * @return array Response in MCP format
      */
     protected function getRequestDetails(string $id, bool $includeRelated = true): array
@@ -245,10 +249,10 @@ class RequestsTool extends AbstractTool
         // Detailed formatting of the request
         $output = "HTTP Request Details:\n\n";
         $output .= "ID: {$entry->id}\n";
-        $output .= "Method: " . ($content['method'] ?? 'Unknown') . "\n";
-        $output .= "URI: " . ($content['uri'] ?? 'Unknown') . "\n";
-        $output .= "Status: " . ($content['response_status'] ?? 'Unknown') . "\n";
-        $output .= "Duration: " . number_format(($content['duration'] ?? 0), 2) . " ms\n";
+        $output .= 'Method: '.($content['method'] ?? 'Unknown')."\n";
+        $output .= 'URI: '.($content['uri'] ?? 'Unknown')."\n";
+        $output .= 'Status: '.($content['response_status'] ?? 'Unknown')."\n";
+        $output .= 'Duration: '.number_format($content['duration'] ?? 0, 2)." ms\n";
         $output .= "Created At: {$createdAt}\n";
 
         // Add related entries summary if batch_id exists
@@ -274,7 +278,7 @@ class RequestsTool extends AbstractTool
 
             $hasRelated = false;
             foreach ($summary as $type => $count) {
-                if ($type !== 'request') { // Skip the request itself
+                if ('request' !== $type) { // Skip the request itself
                     $label = $typeLabels[$type] ?? ucfirst($type);
                     $output .= "- {$label}: {$count}\n";
                     $relatedSummary[$type] = $count;
@@ -336,14 +340,14 @@ class RequestsTool extends AbstractTool
             'headers' => $content['headers'] ?? [],
             'payload' => $content['payload'] ?? [],
             'response_headers' => $content['response_headers'] ?? [],
-            'response' => $content['response'] ?? null
+            'response' => $content['response'] ?? null,
         ];
 
         if (!empty($relatedSummary)) {
             $jsonData['related_entries'] = $relatedSummary;
         }
 
-        $combinedText = $output . "\n\n--- JSON Data ---\n" . json_encode($jsonData, JSON_PRETTY_PRINT);
+        $combinedText = $output."\n\n--- JSON Data ---\n".json_encode($jsonData, JSON_PRETTY_PRINT);
 
         return $this->formatResponse($combinedText);
     }

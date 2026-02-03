@@ -2,13 +2,11 @@
 
 namespace LucianoTonet\LaravelBoostTelescope\MCP\Tools;
 
-use LucianoTonet\LaravelBoostTelescope\Support\DateFormatter;
-use LucianoTonet\LaravelBoostTelescope\Support\Logger;
-
-use Laravel\Telescope\Contracts\EntriesRepository;
 use Laravel\Telescope\EntryType;
 use Laravel\Telescope\Storage\EntryQueryOptions;
 use LucianoTonet\LaravelBoostTelescope\MCP\Tools\Traits\BatchQuerySupport;
+use LucianoTonet\LaravelBoostTelescope\Support\DateFormatter;
+use LucianoTonet\LaravelBoostTelescope\Support\Logger;
 
 /**
  * Tool for interacting with cache operations recorded by Telescope.
@@ -18,9 +16,7 @@ class CacheTool extends AbstractTool
     use BatchQuerySupport;
 
     /**
-     * Returns the tool's short name
-     *
-     * @return string
+     * Returns the tool's short name.
      */
     public function getShortName(): string
     {
@@ -28,9 +24,7 @@ class CacheTool extends AbstractTool
     }
 
     /**
-     * Returns the tool's schema
-     *
-     * @return array
+     * Returns the tool's schema.
      */
     public function getSchema(): array
     {
@@ -46,7 +40,7 @@ class CacheTool extends AbstractTool
                     ],
                     'request_id' => [
                         'type' => 'string',
-                        'description' => 'Filter cache operations by the request ID they belong to (uses batch_id grouping)'
+                        'description' => 'Filter cache operations by the request ID they belong to (uses batch_id grouping)',
                     ],
                     'limit' => [
                         'type' => 'integer',
@@ -93,18 +87,18 @@ class CacheTool extends AbstractTool
                 ],
                 [
                     'description' => 'List cache misses',
-                    'params' => ['operation' => 'miss']
+                    'params' => ['operation' => 'miss'],
                 ],
                 [
                     'description' => 'List cache operations for a specific request',
-                    'params' => ['request_id' => 'abc123']
-                ]
-            ]
+                    'params' => ['request_id' => 'abc123'],
+                ],
+            ],
         ];
     }
 
     /**
-     * Executes the tool with the given parameters
+     * Executes the tool with the given parameters.
      *
      * @param array $params Tool parameters
      *
@@ -137,7 +131,7 @@ class CacheTool extends AbstractTool
     }
 
     /**
-     * Lists cache operations
+     * Lists cache operations.
      *
      * @param array $params Tool parameters
      *
@@ -187,9 +181,15 @@ class CacheTool extends AbstractTool
 
         // Tabular formatting for better readability
         $table = "Cache Operations:\n\n";
-        $table .= sprintf("%-5s %-8s %-50s %-10s %-20s\n",
-            "ID", "Type", "Key", "Time (ms)", "Created At");
-        $table .= str_repeat("-", 100) . "\n";
+        $table .= sprintf(
+            "%-5s %-8s %-50s %-10s %-20s\n",
+            'ID',
+            'Type',
+            'Key',
+            'Time (ms)',
+            'Created At'
+        );
+        $table .= str_repeat('-', 100)."\n";
 
         foreach ($operations as $op) {
             // Truncate key if too long
@@ -209,24 +209,25 @@ class CacheTool extends AbstractTool
             );
         }
 
-        $combinedText = $table . "\n\n--- JSON Data ---\n" . json_encode([
+        $combinedText = $table."\n\n--- JSON Data ---\n".json_encode([
             'total' => count($operations),
-            'operations' => $operations
+            'operations' => $operations,
         ], JSON_PRETTY_PRINT);
 
         return $this->formatResponse($combinedText);
     }
 
     /**
-     * Lists cache operations for a specific request using batch_id
+     * Lists cache operations for a specific request using batch_id.
      *
      * @param string $requestId The request ID
-     * @param array $params Tool parameters
+     * @param array  $params    Tool parameters
+     *
      * @return array Response in MCP format
      */
     protected function listCacheForRequest(string $requestId, array $params): array
     {
-        Logger::info($this->getName() . ' listing cache for request', ['request_id' => $requestId]);
+        Logger::info($this->getName().' listing cache for request', ['request_id' => $requestId]);
 
         // Get the batch_id for this request
         $batchId = $this->getBatchIdForRequest($requestId);
@@ -235,7 +236,7 @@ class CacheTool extends AbstractTool
             return $this->formatError("Request not found or has no batch ID: {$requestId}");
         }
 
-        $limit = isset($params['limit']) ? min((int)$params['limit'], 100) : 50;
+        $limit = isset($params['limit']) ? min((int) $params['limit'], 100) : 50;
 
         // Get cache operations for this batch
         $entries = $this->getEntriesByBatchId($batchId, 'cache', $limit);
@@ -264,25 +265,26 @@ class CacheTool extends AbstractTool
                 'operation' => $operation,
                 'key' => $key,
                 'duration' => $duration,
-                'created_at' => $createdAt
+                'created_at' => $createdAt,
             ];
         }
 
         // Tabular formatting with request context
         $table = "Cache Operations for Request: {$requestId}\n";
         $table .= "Batch ID: {$batchId}\n";
-        $table .= "Total: " . count($operations) . " operations\n\n";
-        $table .= sprintf("%-5s %-8s %-50s %-10s %-20s\n", "ID", "Type", "Key", "Time (ms)", "Created At");
-        $table .= str_repeat("-", 100) . "\n";
+        $table .= 'Total: '.count($operations)." operations\n\n";
+        $table .= sprintf("%-5s %-8s %-50s %-10s %-20s\n", 'ID', 'Type', 'Key', 'Time (ms)', 'Created At');
+        $table .= str_repeat('-', 100)."\n";
 
         foreach ($operations as $op) {
             $key = $op['key'];
             $key = $this->safeString($key);
             if (strlen($key) > 50) {
-                $key = substr($key, 0, 47) . "...";
+                $key = substr($key, 0, 47).'...';
             }
 
-            $table .= sprintf("%-5s %-8s %-50s %-10.2f %-20s\n",
+            $table .= sprintf(
+                "%-5s %-8s %-50s %-10.2f %-20s\n",
                 $op['id'],
                 $op['operation'],
                 $key,
@@ -291,18 +293,18 @@ class CacheTool extends AbstractTool
             );
         }
 
-        $combinedText = $table . "\n\n--- JSON Data ---\n" . json_encode([
+        $combinedText = $table."\n\n--- JSON Data ---\n".json_encode([
             'request_id' => $requestId,
             'batch_id' => $batchId,
             'total' => count($operations),
-            'operations' => $operations
+            'operations' => $operations,
         ], JSON_PRETTY_PRINT);
 
         return $this->formatResponse($combinedText);
     }
 
     /**
-     * Gets details of a specific cache operation
+     * Gets details of a specific cache operation.
      *
      * @param string $id The cache operation ID
      *
@@ -324,9 +326,9 @@ class CacheTool extends AbstractTool
         // Detailed formatting of the cache operation
         $output = "Cache Operation Details:\n\n";
         $output .= "ID: {$entry->id}\n";
-        $output .= "Operation: " . ($content['type'] ?? 'Unknown') . "\n";
-        $output .= "Key: " . ($content['key'] ?? 'Unknown') . "\n";
-        $output .= "Duration: " . number_format(($content['duration'] ?? 0), 2) . " ms\n";
+        $output .= 'Operation: '.($content['type'] ?? 'Unknown')."\n";
+        $output .= 'Key: '.($content['key'] ?? 'Unknown')."\n";
+        $output .= 'Duration: '.number_format($content['duration'] ?? 0, 2)." ms\n";
 
         $createdAt = DateFormatter::format($entry->createdAt);
         $output .= "Created At: {$createdAt}\n\n";
@@ -341,13 +343,13 @@ class CacheTool extends AbstractTool
             }
         }
 
-        $combinedText = $output . "\n\n--- JSON Data ---\n" . json_encode([
+        $combinedText = $output."\n\n--- JSON Data ---\n".json_encode([
             'id' => $entry->id,
             'operation' => $content['type'] ?? 'Unknown',
             'key' => $content['key'] ?? 'Unknown',
             'duration' => $content['duration'] ?? 0,
             'created_at' => $createdAt,
-            'value' => $content['value'] ?? null
+            'value' => $content['value'] ?? null,
         ], JSON_PRETTY_PRINT);
 
         return $this->formatResponse($combinedText);

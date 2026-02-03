@@ -234,6 +234,7 @@ test('tool responses have valid MCP format', function () {
         expect($item)
             ->toHaveKeys(['type', 'text'])
             ->and($item['type'])->toBeString()
-            ->and($item['text'])->toBeString();
+            ->and($item['text'])->toBeString()
+        ;
     }
 });
