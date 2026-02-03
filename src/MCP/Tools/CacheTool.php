@@ -2,6 +2,7 @@
 
 namespace LucianoTonet\LaravelBoostTelescope\MCP\Tools;
 
+use LucianoTonet\LaravelBoostTelescope\Support\DateFormatter;
 use LucianoTonet\LaravelBoostTelescope\Support\Logger;
 
 use Laravel\Telescope\Contracts\EntriesRepository;
